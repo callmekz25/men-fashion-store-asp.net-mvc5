@@ -1,0 +1,315 @@
+﻿
+@model Project_64132985.Models.Product
+@{
+    ViewBag.Title = "Chi tiết";
+    var colors = Model.Colors.Split(',');
+    var sizes = Model.Sizes.Split(',');
+
+}
+<style>
+    .scroll-slides {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+<div class="mb-32 px-6 py-[50px] lg:px-[100px]">
+    <div class="flex items-center gap-2 py-[30px]">
+        <span class="font-medium lg:text-[14px]">@Model.ProductName</span>
+    </div>
+    <div class="grid-cols-1 grid gap-10 lg:grid-cols-2 lg:gap-[100px]">
+        <div class="flex items-center justify-center rounded-lg bg-[#F6F6F6] p-5 lg:p-10">
+            <img src="~/Images/Products/@Model.Img" class="size-[450px] object-contain" />
+        </div>
+        <div class="product-detail">
+            <span class="font-semibold text-[20px] lg:text-[25px]">@Model.ProductName</span>
+            <div class="mt-4">
+                <span class="font-semibold text-[20px] lg:text-[22px]">@(Model.Price.ToString("#,0").Replace(",", ".")) đ</span>
+            </div>
+            <div class="mt-4 flex flex-col gap-2">
+                <span class="uppercase text-[#5C5F6A] lg:text-[15px]">Màu sắc</span>
+                <div class="flex flex-wrap items-center gap-3">
+                    @foreach (var color in colors)
+                    {
+                        <button class="colors rounded border border-gray-300 px-3 py-2 text-[18px] outline-none transition-all duration-300 hover:bg-gray-200 lg:text-[17px]">@color</button>
+                    }
+                </div>
+            </div>
+            <div class="mt-5 flex flex-col gap-2">
+                <span class="uppercase text-[#5C5F6A] lg:text-[15px]">Kích cỡ</span>
+                <div class="flex flex-wrap items-center gap-3">
+                    @foreach (var size in sizes)
+                    {
+                        <button class="sizes rounded border border-gray-300 px-3 py-2 text-[18px] outline-none transition-all duration-300 hover:bg-gray-200 lg:text-[17px]">@size</button>
+                    }
+                </div>
+            </div>
+            <div class="mt-5 flex flex-col gap-2">
+                <span class="uppercase text-[#5C5F6A] lg:text-[15px]">Số lượng</span>
+                <div class="flex w-fit items-center gap-6 rounded border border-gray-300 px-4 py-2">
+                    <button class="minus flex items-center justify-center"><ion-icon name="remove-outline" class="text-[20px] lg:text-[20px]"></ion-icon></button>
+                    <span class="numberOfQuantity text-[20px]">1</span>
+                    <button class="plus flex items-center justify-center"><ion-icon name="add-outline" class="text-[20px] lg:text-[20px]"></ion-icon></button>
+                </div>
+            </div>
+            <div class="mt-8 flex w-full flex-col gap-4 lg:w-[320px]">
+                <button class="addCart flex items-center justify-center gap-2 rounded-md border border-gray-300 px-4 py-3 text-[17px] transition-all duration-300 hover:bg-gray-100 lg:py-2.5">
+                    <ion-icon name="cart-outline" class="size-5"></ion-icon>
+                    Thêm vào giỏ hàng
+                </button>
+                <button class="order-now flex items-center justify-center gap-3 rounded-md bg-black px-4 py-3 text-[17px] text-white transition-all duration-300 hover:opacity-85 lg:py-2.5">
+                    <ion-icon name="bag-handle-outline" class="size-5"></ion-icon>
+                    Đặt ngay
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mt-[100px]">
+        <span class="font-medium text-[20px] lg:text-[23px]">Sản phẩm liên quan</span>
+        <div class="scroll-slides auto-cols-[85%] grid snap-x snap-mandatory snap-always grid-flow-col gap-[30px] overflow-x-auto py-5 md:gap-y-10 md:gap-x-7 md:overflow-x-hidden md:auto-cols-[100%] md:grid-flow-row md:grid-cols-2 lg:grid-cols-4">
+            @foreach (var p in ViewBag.RelatedProducts)
+            {
+                <div class="flex flex-col gap-3" data-aos="fade-in">
+                    <div class="flex items-center justify-center rounded-md bg-[#F6F6F6] p-4">
+                        <a href=@Url.Action("ProductDetail", "Products_64132985", new { id = p.ProductID })>
+                            <img src="~/Images/Products/@p.Img" class="h-[300px] w-[400px] object-contain" />
+                        </a>
+                    </div>
+                    <span class="mt-3 font-medium text-[23px] lg:text-[17px]">@p.ProductName</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-[#474B57] text-[20px] lg:text-[16px]">
+                            @(p.Price.ToString("#,0").Replace(",", "."))
+                            đ
+                        </span>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section ProductDetail {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+
+
+            let selectedProducts = [];
+            const btnOrder = document.querySelector(".order-now");
+            const btnAddCart = document.querySelector(".addCart");
+            let quantity = 1;
+            const btnPlus = document.querySelector(".plus");
+            const btnMinus = document.querySelector(".minus");
+            const quantityText = document.querySelector(".numberOfQuantity");
+            const sizes = document.querySelectorAll(".sizes")
+            const colors = document.querySelectorAll(".colors")
+            let pickColor = "";
+            let pickSize = "";
+
+            btnOrder.addEventListener("click", () => {
+                if (pickColor && pickSize) {
+                    selectedProducts.push({
+                        productID: "@Model.ProductID",
+                        Quantity: quantity,
+                        Color: pickColor,
+                        Size: pickSize,
+                    })
+                    if (selectedProducts.length > 0) {
+                        fetch('/Cart/GoToCheckout', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                products: selectedProducts
+                            })
+                        }).then(response => response.json())
+                            .then((data) => {
+                                if (!data.success) {
+                                    Toastify({
+                                        text: data.message,
+                                        className: "info",
+                                        position: "center",
+                                        duration: 2000,
+                                        avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                        //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                        style: {
+                                            background: "white",
+                                            color: "black",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "10px",
+                                            fontSize: "16px",
+
+                                        },
+                                        destination: "/Login"
+                                    }).showToast();
+                                } else {
+
+                                    window.location.href = `/Checkout/${data.orderID}`;
+                                }
+                            })
+                    }
+                }
+                else {
+                    Toastify({
+                        text: "Bạn cần phải chọn màu và kích cỡ.",
+                        className: "info",
+                        position: "center",
+                        duration: 2000,
+                        avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                        //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                        style: {
+                            background: "white",
+                            color: "black",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            fontSize: "16px",
+
+                        },
+
+                    }).showToast();
+                }
+            })
+
+            colors.forEach((color) => {
+                color.addEventListener("click", () => {
+
+                    if (pickColor === color.textContent) {
+                        pickColor = "";
+                    } else {
+                        pickColor = color.textContent;
+                    }
+                    if (color.classList.contains("bg-gray-200")) {
+                        color.classList.remove("bg-gray-200")
+
+                    } else {
+                        colors.forEach((c) => c.classList.remove("bg-gray-200"));
+                        color.classList.add("bg-gray-200")
+                    }
+
+
+                })
+            })
+            sizes.forEach((size) => {
+                size.addEventListener("click", () => {
+                    if (pickSize === size.textContent) {
+                        pickSize = "";
+                    } else {
+                        pickSize = size.textContent;
+                    }
+
+                    if (size.classList.contains("bg-gray-200")) {
+                        size.classList.remove("bg-gray-200")
+
+                    } else {
+                        sizes.forEach((s) => s.classList.remove("bg-gray-200"));
+                        size.classList.add("bg-gray-200")
+                    }
+
+                })
+            })
+            if (btnPlus && btnMinus && quantityText) {
+                btnPlus.addEventListener("click", () => {
+                    quantity += 1;
+                    quantityText.innerText = quantity;
+                });
+
+                btnMinus.addEventListener("click", () => {
+                    if (quantity > 1) {
+                        quantity -= 1;
+                        quantityText.innerText = quantity;
+                    }
+                });
+            } else {
+                console.error("One or more elements (plus, minus, numberOfQuantity) were not found in the DOM.");
+            }
+            btnAddCart.addEventListener("click", () => {
+                if (pickColor && pickSize) {
+                    quantity = parseInt(quantity);
+                    fetch('/Cart_64132985/Index', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            productID: "@Model.ProductID",
+                            quantity: quantity,
+                            color: pickColor.trim(),
+                            size: pickSize.trim(),
+                        })
+                    }).then(response => response.json())
+                        .then(data => {
+
+                            if (!data.success) {
+                                Toastify({
+                                    text: data.message,
+                                    className: "info",
+                                    position: "center",
+                                    duration: 2000,
+                                    avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                    //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        fontSize: "16px",
+
+                                    },
+                                    destination: "/Login",
+                                    stopOnFocus: true,
+                                }).showToast();
+                            } else {
+                                Toastify({
+                                    text: data.message,
+                                    className: "info",
+                                    position: "center",
+                                    duration: 2000,
+                                    //avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                    avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        fontSize: "16px",
+
+                                    }
+                                }).showToast();
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error.message);
+                        });
+
+
+                }
+                else {
+                    Toastify({
+                        text: "Bạn cần phải chọn màu và kích cỡ.",
+                        className: "info",
+                        position: "center",
+                        duration: 2000,
+                        avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                        //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                        style: {
+                            background: "white",
+                            color: "black",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            fontSize: "14px",
+
+                        },
+
+                    }).showToast();
+                }
+            })
+        });
+
+    </script>
+}

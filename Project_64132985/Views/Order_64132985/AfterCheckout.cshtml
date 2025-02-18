@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "Order | Success";
+}
+
+
+<div>
+    <div class="flex items-center bg-[#D5E5D7] px-6 py-10 lg:px-[100px] lg:py-[60px]">
+        <div class="flex flex-col gap-3" data-aos="fade-right">
+            <span class="font-semibold text-[22px] lg:text-[20px]">Đặt hàng thành công</span>
+            <span class="font-normal text-[16px] text-gray-500 lg:text-[13px]">Thanh toán > <span class="text-black">Đặt hàng thành công</span> </span>
+        </div>
+    </div>
+    <div class="flex items-center justify-center bg-white pb-[200px] pt-[100px] lg:pt-[160px]">
+       
+        <div class="flex flex-col items-center justify-center gap-2">
+            <img src="~/Images/Icons/order-success.png" class="h-fit w-fit" />
+            <span class="mt-4 font-semibold text-[22px] lg:text-[23px]">Cảm ơn khách hàng đã mua hàng</span>
+            <span class="max-w-[400px] text-center text-[#5C5F6A] text-[15px] lg:text-[14px]">Đơn đặt hàng của quý khách đã đặt thành công và sẽ được chuẩn bị ngay.</span>
+            <button class="mt-8 flex items-center gap-2 rounded bg-black px-6 py-3 text-white lg:text-[13px]">
+                <a href="@Url.Action("Index", "Account_64132985")">Xem đơn đặt hàng</a>
+                <ion-icon name="arrow-forward-outline" class="lg:text-[13px]"></ion-icon>
+            </button>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,288 @@
+﻿
+@{
+    ViewBag.Title = "Thêm nhân viên";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var emailRegex = @"/\S+@\S+\.\S+/";
+}
+
+<div class="mt-16 pb-20">
+    <div class="popup-overlay overlay">
+        <div class="popup scale-0 opacity-0 transition-all duration-300">
+
+        </div>
+    </div>
+    <span class="font-medium text-[25px]">Thêm nhân viên</span>
+    <div class="grid-cols-3 mt-10 grid gap-10">
+        <div class="col-span-2 h-fit">
+            <div class="rounded-xl bg-white p-5">
+                <span class="font-medium text-[18px]">Thông tin cơ bản</span>
+                <div class="grid-cols-2 mt-8 grid gap-6">
+                    <div class="flex flex-col gap-1">
+                        <label for="name" class="text-gray-400 text-[15px]">Tên nhân viên</label>
+                        <input type="text" id="name" class="border-2 rounded-lg border-gray-200 px-2 py-2 text-[16px]" />
+                        <span id="error-name" class="text-red-500 text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="email" class="text-gray-400 text-[15px]">Email</label>
+                        <input type="text" id="email" class="border-2 rounded-lg border-gray-200 px-2 py-2 text-[16px]" />
+                        <span id="error-email" class="text-red-500 text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="phone" class="text-gray-400 text-[15px]">Số điện thoại</label>
+                        <input type="text" id="phone" class="border-2 rounded-lg border-gray-200 px-2 py-2 text-[16px]" />
+                        <span id="error-phone" class="text-red-500 text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="addr" class="text-gray-400 text-[15px]">Địa chỉ</label>
+                        <input type="text" id="addr" class="border-2 rounded-lg border-gray-200 px-2 py-2 text-[16px]" />
+                        <span id="error-addr" class="text-red-500 text-[13px]"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 h-fit rounded-xl bg-white p-5">
+                <span class="font-medium text-[18px]">Mật khẩu và quyền</span>
+                <div class="grid-cols-2 mt-8 grid gap-8">
+                    <div class="flex flex-col gap-1">
+                        <label for="pass" class="text-gray-400 text-[15px]">Mật khẩu</label>
+                        <div class="relative">
+                            <ion-icon id="toggle-pass" name="eye-off-outline" class="translate-y-[-50%] absolute right-3 top-[50%] size-5 hover:cursor-pointer"></ion-icon>
+                            <input id="pass" type="password" class="border-2 w-full rounded-lg border-gray-200 px-2 py-2 text-[16px]" />
+                        </div>
+                        <span id="error-pass" class="text-red-500 text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="role" class="text-gray-400 text-[15px]">Quyền</label>
+                        <select id="role" class="border-2 rounded-lg border-gray-200 px-2 py-2 text-[16px]">
+                            <option value=""></option>
+                            <option value="employee">Nhân viên</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <span id="error-role" class="text-red-500 text-[13px]"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-fit rounded-xl bg-white p-5">
+            <span class="font-medium text-[18px]">Ảnh của nhân viên</span>
+            <div class="mt-8 flex items-center justify-center rounded-xl bg-gray-100 px-4 py-5">
+                <img class="opacity-0 size-[200px] object-contain" id="employee-image" />
+            </div>
+            <input type="file" id="post-image" class="hidden"  />
+            <label for="post-image" class="mt-4 flex items-center justify-end gap-3 hover:cursor-pointer">
+                <ion-icon name="cloud-upload-outline" class="size-8"></ion-icon>
+                <span class="text-[14px] text-gray-500">Thêm ảnh nhân viên</span>
+            </label>
+            <div class="flex items-center justify-end">
+                <span id="error-image" class="text-red-500 text-[13px]"></span>
+            </div>
+        </div>
+        <div class="col-span-2 flex items-center justify-end gap-4">
+            <a href="@Url.Action("Index")" class="rounded-md border border-gray-300 bg-gray-300 px-4 py-2">Quay về</a>
+            <button id="add" class="rounded-md bg-[#4b68ff] px-4 py-2 text-white">Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+
+@section AddEmployee{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnTogglePassword = document.querySelector("#toggle-pass");
+            const passInput = document.querySelector("#pass");
+            const nameInput = document.querySelector("#name");
+            const emailInput = document.querySelector("#email");
+            const phoneInput = document.querySelector("#phone");
+            const addrInput = document.querySelector("#addr");
+            const roleInput = document.querySelector("#role");
+            const imagePreview = document.querySelector("#employee-image");
+            const imageInput = document.querySelector("#post-image");
+
+            const errorName = document.querySelector("#error-name");
+            const errorEmail = document.querySelector("#error-email");
+            const errorPhone = document.querySelector("#error-phone");
+            const errorAddr = document.querySelector("#error-addr");
+            const errorPass = document.querySelector("#error-pass");
+            const errorRole = document.querySelector("#error-role");
+            const errorImage = document.querySelector("#error-image");
+
+            const btnAdd = document.querySelector("#add");
+            const nav = document.querySelector("#employee-nav");
+            nav.classList.add("bg-[#4b68ff]", "text-white")
+
+            const emailRegex = new RegExp(@emailRegex);
+
+
+
+            // Hiện ảnh tạm thời sau khi tải ảnh
+            imageInput.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const url = URL.createObjectURL(file);
+                    imagePreview.src = url;
+                    imagePreview.name = file.name
+                    imagePreview.classList.remove("opacity-0");
+                    errorImage.textContent = "";
+                }
+            })
+
+            btnTogglePassword.addEventListener("click", () => {
+                if (passInput.type === "password") {
+                    passInput.type = "text";
+                    btnTogglePassword.setAttribute("name", "eye-outline");
+                } else {
+                    passInput.type = "password";
+                    btnTogglePassword.setAttribute("name", "eye-off-outline");
+                }
+            })
+            nameInput.addEventListener("input", () => {
+                errorName.textContent = "";
+                nameInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+            emailInput.addEventListener("input", () => {
+                errorEmail.textContent = "";
+                emailInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+            phoneInput.addEventListener("input", () => {
+                errorPhone.textContent = "";
+                phoneInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+            addrInput.addEventListener("input", () => {
+                errorPhone.textContent = "";
+                addrInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+            passInput.addEventListener("input", () => {
+                errorPass.textContent = "";
+                passInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+            roleInput.addEventListener("input", () => {
+                errorRole.textContent = "";
+                roleInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+
+            // Hàm xử lý khi bấm thêm mới nhân viên
+            btnAdd.addEventListener("click", () => {
+                let flag = false;
+                if (nameInput.value === "") {
+                    errorName.textContent = "Tên nhân viên không được trống";
+                    flag = true;
+                    nameInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorName.textContent = "";
+                    nameInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+
+                if (emailInput.value === "") {
+                    errorEmail.textContent = "Email không được trống";
+                    flag = true;
+                    emailInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else if (!emailRegex.test(emailInput.value)) {
+                    errorEmail.textContent = "Email không không hợp lệ";
+                    flag = true;
+                    emailInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorEmail.textContent = "";
+                    emailInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (phoneInput.value === "") {
+                    errorPhone.textContent = "Số điện thoại không được trống";
+                    flag = true;
+                    phoneInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else if (!phoneInput.value.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g)) {
+                    errorPhone.textContent = "Số điện thoại không không hợp lệ";
+                    flag = true;
+                    phoneInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorPhone.textContent = "";
+                    phoneInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (addrInput.value === "") {
+                    errorAddr.textContent = "Địa chỉ không được trống";
+                    flag = true;
+                    addrInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorAddr.textContent = "";
+
+                    addrInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (passInput.value === "") {
+                    errorPass.textContent = "Mật khẩu không được trống";
+                    flag = true;
+                    passInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else if (passInput.value.length < 6) {
+                    errorPass.textContent = "Mật khẩu tối thiểu 6 kí tự";
+                    flag = true;
+                    passInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorPass.textContent = "";
+                    passInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (roleInput.value === "") {
+                    errorRole.textContent = "Quyền không được trống";
+                    flag = true;
+                    roleInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorRole.textContent = "";
+
+                    roleInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (!imageInput.files[0]) {
+                    errorImage.textContent = "Ảnh không được trống";
+                    flag = true;
+                } else {
+                    errorImage.textContent = "";
+                }
+                if (!flag) {
+                    const formData = new FormData();
+                    formData.append("name", nameInput.value);
+                    formData.append("email", emailInput.value);
+                    formData.append("phone", phoneInput.value);
+                    formData.append("address", addrInput.value);
+                    formData.append("img", imageInput.files[0]);
+                    formData.append("pass", passInput.value);
+                    formData.append("role", roleInput.value);
+                    fetch(`/Admin/Employee/Add`, {
+                        method: 'POST',
+                        body: formData
+
+                    }).then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                Toastify({
+                                    text: data.message,
+                                    className: "info",
+                                    position: "center",
+                                    duration: 2000,
+                                    //avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                    avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        fontSize: "16px",
+
+                                    },
+
+                                }).showToast();
+                                nameInput.value = "";
+                                emailInput.value = ""
+                                phoneInput.value = ""
+                                addrInput.value = ""
+                                passInput.value = ""
+                                roleInput.value = ""
+                                imagePreview.src = ""
+                                imageInput.value = ""
+                                imagePreview.classList.add("opacity-0")
+                            }
+                        })
+                }
+            })
+
+
+        })
+
+    </script>    
+    
+    
+    
+}

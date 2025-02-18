@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="4968d2a22a7d4ea2bc95095e1ac01b0c" Name="Diagram1">
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.Cart" Width="1.5" PointX="3" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.CartDetail" Width="1.5" PointX="5.25" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.Customer" Width="1.5" PointX="0.75" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.Employee" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.OrderCustomer" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.OrderCustomerDetail" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.Product" Width="1.5" PointX="3" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.sysdiagram" Width="1.5" PointX="5.75" PointY="8.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_THOITRANG_FINALModel.Voucher" Width="1.5" PointX="0.75" PointY="12.25" IsExpanded="true" />
+        <AssociationConnector Association="QL_THOITRANG_FINALModel.FK__Cart__CustomerID__2A4B4B5E" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_THOITRANG_FINALModel.FK__CartDetai__CartI__2D27B809" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_THOITRANG_FINALModel.FK__CartDetai__Produ__2E1BDC42" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_THOITRANG_FINALModel.FK__OrderCust__Custo__30F848ED" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_THOITRANG_FINALModel.FK__OrderCust__Emplo__31EC6D26" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_THOITRANG_FINALModel.FK__OrderCust__Order__37A5467C" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_THOITRANG_FINALModel.FK_OrderCustomer_VoucherID" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_THOITRANG_FINALModel.FK__OrderCust__Produ__36B12243" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,943 @@
+﻿
+@model IEnumerable<Project_64132985.Models.Product>
+@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var grid = new WebGrid(Model, canPage: true, defaultSort: "ProductID", rowsPerPage: 10);
+}
+<style>
+    .table-pager {
+        text-align: center;
+    }
+
+        .table-pager > td {
+            padding-top: 50px;
+            font-size: 16px;
+            color: red;
+        }
+
+            .table-pager > td > a {
+                color: black; /* Đặt màu cho tất cả các td */
+            }
+
+
+            .table-pager > td > a {
+                background-color: #f5f5f5;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                padding: 5px 10px;
+                font-size: 16px;
+            }
+
+                .table-pager > td > a:hover {
+                    background-color: #f0f0f0;
+                    font-size: 16px;
+                }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+    }
+
+        .overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+    /* Popup content */
+    .popup {
+        background: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+
+    .popup-filter {
+        background: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+
+    #all-filter::-webkit-scrollbar {
+        width: 7px;
+    }
+
+    #all-filter::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 10px;
+    }
+
+    #all-filter::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .overlay-detail-product {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+        padding: 0 20px;
+    }
+
+
+        .overlay-detail-product.active {
+            visibility: visible;
+            opacity: 1;
+        }
+</style>
+<div>
+    <div class="my-16">
+        @*Popup delete*@
+        <div class="popup-overlay overlay">
+            <div class="popup scale-0 opacity-0 duration-[400ms] w-[350px] overflow-hidden rounded-xl font-medium transition-all">
+                <div class="flex items-center justify-between border-b border-gray-200 bg-gray-200 px-6 py-3">
+                    <span class="text-[20px]">Xóa sản phẩm?</span>
+                    <ion-icon name="close-outline" class="close size-7 hover:cursor-pointer"></ion-icon>
+                </div>
+                <div class="flex items-center border-b border-gray-200 px-6 py-4 font-normal text-[16px] text-gray-500">
+                    <span>Lưu ý không thể hoàn tác được</span>
+                </div>
+                <div class="flex items-center justify-end gap-5 px-6 py-4 font-medium text-[15px]">
+                    <button class="border-2 cancel rounded-md border-gray-200 px-6 py-1">
+                        Hủy
+                    </button>
+                    <button class="delete rounded-md bg-red-500 px-6 py-1.5 text-white">
+                        Xóa
+                    </button>
+                </div>
+            </div>
+        </div>
+        @*Popup chọn màu*@
+        <div class="overlay-filter overlay">
+            <div class="popup-filter scale-0 opacity-0 duration-[400ms] max-w-[450px] rounded-lg px-6 py-4 transition-all">
+
+            </div>
+        </div>
+        <div class="overlay-detail overlay-detail-product">
+            <div class="detail-content opacity-0 scale-0 min-w-[450px] translate-x-[100%] rounded-2xl bg-white transition-all duration-500">
+                <div class="flex items-center justify-between border-b border-gray-300 px-5 py-3">
+                    <div class="flex flex-col gap-1">
+                        <span id="productID" class="font-medium text-[20px]"></span>
+                        <span class="text-[14px] text-gray-500">Chi tiết sản phẩm</span>
+                    </div>
+                    <button id="close-detail"><ion-icon name="close-outline" class="size-7"></ion-icon></button>
+                </div>
+                <div class="flex flex-col gap-3 border-b border-gray-300 px-5 py-3">
+                    <div class="flex flex-col gap-2" id="products">
+                        <div class="flex items-start justify-between">
+                            <span class="font-normal text-[16px] text-gray-500">Ảnh sản phẩm</span>
+                            <img id="productImg" src="" class="size-20 object-contain" />
+                        </div>
+                        <div class="flex items-center justify-between text-[15px]">
+                            <span class="text-gray-500">Ngày nhập hàng</span>
+                            <span id="createdAt" class="font-medium">20-12-2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 border-b border-gray-300 px-5 py-3">
+
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Tên sản phẩm</span>
+                        <span id="productName" class="font-medium"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Giá tiền</span>
+                        <span id="price" class="font-medium"></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 border-b border-gray-300 px-5 py-3">
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Kích cỡ</span>
+                        <span id="size" class="font-medium"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Màu sắc</span>
+                        <span id="color" class="font-medium text-[#1262fc]"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Loại hàng</span>
+                        <span id="category" class="font-medium"></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 px-5 py-3 pb-5">
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Ghi chú</span>
+                        <span id="descr" class="font-medium"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Lần cuối cập nhật</span>
+                        <span id="updatedAt" class="font-medium"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="rounded-xl bg-white py-5 pb-10">
+            <div class="flex items-center justify-between px-8">
+                <span class="font-medium text-[18px]">Sản phẩm</span>
+                <div class="flex items-center gap-3">
+                    @if (ViewBag.User.Roles == "admin")
+                    {
+
+                        <a href="@Url.Action("Add", "AdminProduct_64132985")" class="flex items-center gap-1 rounded bg-[#4b68ff] px-4 py-[9px] text-white text-[14px]">
+                            <ion-icon name="add-outline" class="size-4"></ion-icon>
+                            <span>Thêm mới</span>
+                        </a>
+                    }
+                    <div class="z-50 flex items-center justify-between gap-5">
+                        <!-- Search Box -->
+                        @using (Html.BeginForm("Index", "AdminProduct_64132985", FormMethod.Get))
+                        {
+
+                            <div class="relative">
+                                <button type="submit" class="-translate-y-1/2 absolute left-2 top-1/2 flex transform items-center justify-center">
+                                    <ion-icon name="search-outline" class="size-5"></ion-icon>
+                                </button>
+                                <input type="text"
+                                       list="product-ids"
+                                       autocomplete="off"
+                                       name="id"
+                                       value="@ViewBag.Id"
+                                       placeholder="Tìm kiếm ID hoặc tên"
+                                       class="border-2 w-full rounded-md border-gray-200 py-2 pl-8 pr-2 text-sm" />
+                                <datalist id="product-ids">
+                                    @if (ViewBag.Ids != null)
+                                    {
+                                        foreach (var id in ViewBag.Ids)
+                                        {
+                                            <option value="@id"></option>
+                                        }
+                                    }
+                                </datalist>
+                            </div>
+                        }
+
+                        <!-- Filter Button -->
+                        <div class="relative">
+                            <button class="btn-filter border-2 relative flex items-center gap-2 rounded-lg border-gray-300 px-4 py-2 focus:ring focus:ring-blue-500">
+                                <ion-icon name="filter-outline" class="size-5"></ion-icon>
+                                <span class="text-sm font-normal text-gray-500">Bộ lọc</span>
+                                @if (ViewBag.NumberFilter > 0)
+                                {
+                                    <div id="number-filter" class="top-[-10px] absolute -right-2 flex size-5 items-center justify-center rounded-full bg-orange-300 text-[12px] text-white">@ViewBag.NumberFilter</div>
+                                }
+                            </button>
+
+                            <!-- Filter Dropdown -->
+                            <div class="dropdown-filter opacity-0 scale-0 absolute right-0 mt-2 w-96 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl transition-all duration-500">
+                                <!-- Header -->
+                                <div class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-2">
+                                    <span class="font-medium">Bộ lọc</span>
+                                    <button class="btn-close-filter text-gray-500 hover:text-red-500">
+                                        <ion-icon name="close-outline" class="size-7"></ion-icon>
+                                    </button>
+                                </div>
+                                @using (Html.BeginForm("Index", "AdminProduct_64132985", FormMethod.Get))
+                                {
+
+
+                                    <!-- Filters -->
+                                    <div id="all-filter" class="max-h-[450px] space-y-6 overflow-x-hidden overflow-y-scroll p-4 text-[15px]">
+
+
+                                        <!-- Date Filter -->
+                                        <div>
+                                            <div class="flex items-center justify-between">
+                                                <label class="text-gray-400">Chọn ngày</label>
+                                                <button id="delete-date" class="text-sm font-medium text-blue-500">Xóa</button>
+                                            </div>
+                                            <div class="grid-cols-2 mt-2 grid gap-4">
+                                                <div>
+                                                    <label for="from-date" class="text-sm">Từ:</label>
+                                                    <input type="date"
+                                                           id="from-date"
+                                                           name="fromDate"
+                                                           value="@((ViewBag.From != null) ? ((DateTime)ViewBag.From).ToString("yyyy-MM-dd") : "")"
+                                                           class="mt-1 w-full rounded-md border px-2 py-2" />
+                                                </div>
+                                                <div>
+                                                    <label for="to-date" class="text-sm">Đến:</label>
+                                                    <input type="date"
+                                                           id="to-date"
+                                                           name="toDate"
+                                                           value="@((ViewBag.To != null) ? ((DateTime)ViewBag.To).ToString("yyyy-MM-dd") : "")"
+                                                           class="mt-1 w-full rounded-md border px-2 py-2" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Name Filter -->
+                                        <div>
+                                            <div class="flex items-center justify-between">
+                                                <label class="text-gray-400">Tên sản phẩm</label>
+                                                <button id="delete-name" class="text-sm font-medium text-blue-500">Xóa</button>
+                                            </div>
+                                            <input type="text"
+                                                   id="name"
+                                                   class="mt-2 w-full rounded-md border px-2 py-2"
+                                                   name="name"
+                                                   value="@ViewBag.ProductName"
+                                                   />
+
+                                        </div>
+
+                                        <!-- Price Filter -->
+                                        <div>
+                                            <div class="flex items-center justify-between">
+                                                <label class="text-gray-400">Giá tiền</label>
+                                                <button id="delete-price" class="text-sm font-medium text-blue-500">Xóa</button>
+                                            </div>
+                                            <div class="slider-container mt-8">
+                                                <div class="slider-wrapper relative">
+                                                    <input type="range" id="price-range" name="price" min="100000" max="2000000" value="@(ViewBag.Price != null ? ViewBag.Price : 100000)" class="w-full" step="50000">
+                                                    <div class="top-[-125%] z-[999] absolute left-0 w-auto whitespace-nowrap rounded-full bg-black px-2.5 py-1.5 font-medium text-white lg:text-[13px]" id="price-output">@(ViewBag.Price != null ? ViewBag.Price.ToString("#,0").Replace(",", "."): "100.000") đ</div>
+                                                </div>
+                                                <div class="flex items-center justify-between lg:text-[13px]">
+                                                    <span>100.000đ</span>
+                                                    <span>2.000.000đ</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Categories Filter -->
+                                        <div>
+                                            <div class="flex items-center justify-between">
+                                                <label class="text-gray-400">Loại sản phẩm</label>
+                                                <button class="text-sm font-medium text-blue-500" id="delete-category">Xóa</button>
+                                            </div>
+                                            <select id="categories" name="category" class="mt-2 w-full rounded-md border px-2 py-2">
+                                                <option value="">Chọn loại áo</option>
+                                                @foreach (var category in ViewBag.Categories)
+                                                {
+                                                    <option value="@category.Value"
+                                                            @(category.Value == ViewBag.SelectedCategory ? "selected" : "")>
+                                                        @category.Text
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+
+
+
+                                        <!-- Size Filter -->
+                                        <div>
+                                            <div class="flex items-center justify-between">
+                                                <label class="text-gray-400">Kích cỡ</label>
+                                                <button id="delete-size" class="btn-clear-size text-sm font-medium text-blue-500">Xóa</button>
+                                            </div>
+                                            <div class="mt-2 flex flex-col gap-1">
+                                                <input id="sizes-hidden" type="text" value="@ViewBag.Sizes" name="sizes" class="hidden" />
+                                                <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 px-2 py-3 text-[16px]">
+                                                    <div class="size-content flex flex-wrap items-center gap-2">
+                                                        @if (!string.IsNullOrEmpty(ViewBag.Sizes as string))
+                                                        {
+                                                            var sizes = (ViewBag.Sizes as string).Split(',');
+                                                            foreach (var size in sizes)
+                                                            {
+                                                                <div class="w-fit rounded border border-gray-400 px-3 py-2 font-medium text-[13px]">@size</div>
+                                                            }
+                                                        }
+                                                    </div>
+                                                    <button id="btn-size" class="rounded text-[#4b68ff] text-[13px]">Chọn kích cỡ</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Color Filter -->
+                                        <div>
+                                            <div class="flex items-center justify-between">
+                                                <label class="text-gray-400">Màu sắc</label>
+                                                <button id="delete-color" class="btn-clear-color text-sm font-medium text-blue-500">Xóa</button>
+                                            </div>
+                                            <div class="mt-2 flex flex-col gap-1">
+                                                <input id="colors-hidden" type="text" value="@ViewBag.Colors" name="colors" class="hidden" />
+                                                <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 px-2 py-3 text-[16px]">
+                                                    <div class="color-content flex flex-wrap items-center gap-2">
+                                                        @if (!string.IsNullOrEmpty(ViewBag.Colors as string))
+                                                        {
+                                                            var colors = (ViewBag.Colors as string).Split(',');
+                                                            foreach (var color in colors)
+                                                            {
+                                                                <div class="w-fit rounded border border-gray-400 px-3 py-2 font-medium text-[13px]">@color</div>
+                                                            }
+                                                        }
+                                                    </div>
+                                                    <button id="btn-color" class="rounded text-[#4b68ff] text-[13px]">Chọn màu sắc</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                    <!-- Footer -->
+                                    <div class="flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4">
+                                        <button id="reset-filter" class="rounded-md bg-gray-100 px-4 py-2 text-sm text-gray-500 hover:bg-gray-200">
+                                            Xóa bộ lọc
+                                        </button>
+                                        <button type="submit" id="apply-filter" class="rounded-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600">
+                                            Áp dụng
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="mt-10 px-10">
+
+                @grid.GetHtml(
+       tableStyle: "min-w-full bg-white grid-container",
+       headerStyle: "text-left py-2 font-normal text-gray-500",
+       rowStyle: "border-b border-gray-200 py-2 text-gray-700",
+       alternatingRowStyle: "border-b border-gray-200 py-2 text-gray-700",
+       footerStyle: "table-pager",
+       columns: grid.Columns(
+           grid.Column("Img", "Ảnh", style: "py-2", format: @<text>
+                    <img src="@Url.Content("~/Images/Products/" + item.Img)" alt="Product Image" style="width: 70px; height: 70px; object-fit: contain;" />
+        </text>),
+grid.Column("ProductID", "Mã sản phẩm", style: "py-2"),
+grid.Column("ProductName", "Tên", style: "py-2"),
+grid.Column(
+"CreatedAt",
+"Ngày nhập",
+style: "py-2",
+format: @<text>@(item.CreatedAt.ToString("dd/MM/yyyy"))</text>
+),
+grid.Column("Price", "Giá tiền", format: @<text>@(item.Price?.ToString("#,0").Replace(",", ".")) đ</text>, style: "py-2"),
+grid.Column("Category", "Thể loại", style: "py-2"),
+grid.Column("Chức năng", format: @<text>
+    <div class="flex items-center gap-3">
+        @if (ViewBag.User.Roles == "admin")
+        {
+
+            <button class="btn-edit" data-id="@item.ProductID">
+                <ion-icon name="create-outline" class="size-6 text-blue-500"></ion-icon>
+            </button>
+        }
+
+        <button class="btn-detail" data-product='{
+    "ProductID": "@item.ProductID",
+    "Img": "@item.Img",
+    "ProductName": "@item.ProductName",
+    "Price": @item.Price,
+    "Desc": "@(item.Descr != null ? item.Descr : "Trống")",
+    "Category": "@item.Category",
+    "Colors": "@item.Colors",
+    "Sizes": "@item.Sizes",
+    "CreatedAt": "@item.CreatedAt.ToString("dd-MM-yyyy")",
+   "UpdatedAt": "@(item.UpdatedAt?.ToString("dd-MM-yyyy") ?? item.CreatedAt?.ToString("dd-MM-yyyy") ?? "No Date")"
+
+}'>
+            <ion-icon name="list-outline" class="size-6"></ion-icon>
+        </button>
+        @if (ViewBag.User.Roles == "admin")
+        {
+
+            <button class="btn-delete" data-id="@item.ProductID">
+                <ion-icon name="trash-outline" class="size-6 text-red-500"></ion-icon>
+            </button>
+        }
+    </div>
+</text>)
+)
+)
+                <div class="mt-10 flex items-center justify-center font-normal text-gray-500 text-[17px]">
+                    @ViewBag.Result
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Product{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // Edit
+            const btnEdit = document.querySelectorAll(".btn-edit");
+
+            // Detail
+            const overlayDetail = document.querySelector(".overlay-detail")
+            const btnDetail = document.querySelectorAll(".btn-detail");
+            const contentDetail = document.querySelector(".detail-content")
+            const btnCloseDetail = document.querySelector("#close-detail")
+            const productIdEl = document.querySelector("#productID");
+            const productImgEl = document.querySelector("#productImg");
+            const productNameEl = document.querySelector("#productName");
+            const creatAtEl = document.querySelector("#createdAt");
+            const priceEl = document.querySelector("#price");
+            const sizeElRes = document.querySelector("#size");
+            const colorElRes = document.querySelector("#color");
+            const descrEl = document.querySelector("#descr");
+            const categoryEl = document.querySelector("#category");
+            const updateAtEl = document.querySelector("#updatedAt");
+
+            // Delete
+            const btnDelete = document.querySelectorAll(".btn-delete");
+            const confirmDelete = document.querySelector(".delete");
+            const overlay = document.querySelector(".popup-overlay");
+            const popup = document.querySelector(".popup");
+            const turnOffPopup = document.querySelector(".close");
+            const btnCancelDelete = document.querySelector(".cancel");
+
+            // Filter
+            const btnFilter = document.querySelector(".btn-filter")
+            const btnApplyFilter = document.querySelector("#apply-filter")
+            const dropDownFilter = document.querySelector(".dropdown-filter");
+            const overlayFilter = document.querySelector(".overlay-filter");
+            const popupFilter = document.querySelector(".popup-filter");
+            const btnCloseFilter = document.querySelector(".btn-close-filter");
+            // Filter size
+            const btnSize = document.querySelector("#btn-size");
+            const sizeContainer = document.querySelector(".size-content");
+            const btnClearFilterSize = document.querySelector(".btn-clear-size");
+            // Filter color
+            const btnColor = document.querySelector("#btn-color");
+            const colorContainer = document.querySelector(".color-content");
+            const btnClearFilterColor = document.querySelector(".btn-clear-color");
+            // Navbar
+            const nav = document.querySelector("#product");
+            nav.classList.add("bg-[#4b68ff]", "text-white");
+            // Value từng ô filter
+            const btnResetFilter = document.querySelector("#reset-filter")
+            const rangeInput = document.getElementById('price-range');
+            const priceOutput = document.querySelector("#price-output");
+            const categories = document.querySelector("#categories");
+            const name = document.querySelector("#name")
+
+            const colors = document.querySelector("#colors-hidden");
+            const sizes = document.querySelector("#sizes-hidden");
+            const fromDate = document.querySelector("#from-date");
+            const toDate = document.querySelector("#to-date");
+
+            // Xóa filter theo từng filter
+            const btnDeleteCategory = document.querySelector("#delete-category");
+            const btnDeleteName = document.querySelector("#delete-name");
+            const btnDeletePrice = document.querySelector("#delete-price");
+            const btnDeleteStock = document.querySelector("#delete-stock");
+            const btnDeleteDate = document.querySelector("#delete-date");
+
+
+
+
+            btnDeleteDate.addEventListener("click", () => {
+                fromDate.value = ""
+                toDate.value = ""
+            })
+            btnDeleteName.addEventListener("click", () => {
+
+                name.value = ""
+            })
+
+            btnDeleteCategory.addEventListener("click", () => {
+
+                categories.value = ""
+            })
+            btnDeletePrice.addEventListener("click", () => {
+
+                rangeInput.value = 100000;
+            })
+
+
+
+            // Xử lý khi bấm xóa bộ lọc
+            btnResetFilter.addEventListener("click", () => {
+                fromDate.value = ""
+                toDate.value = ""
+                name.value = ""
+                categories.value = ""
+                rangeInput.value = 100000;
+
+
+                colors.value = ""
+                sizes.value = "";
+            })
+            // Hàm lấy ra vị trí của nút range để hiển thị số tiền đang range
+            rangeInput.addEventListener('input', () => {
+                const value = rangeInput.value;
+                const min = rangeInput.min;
+                const max = rangeInput.max;
+
+                // Tính toán tỷ lệ phần trăm của giá trị
+                const percentage = (value - min) / (max - min);
+
+
+                const position = percentage * 100; // Ví dụ, sẽ trả về giá trị từ 0 đến 100 (theo phần trăm)
+                priceOutput.style.left = `calc(${position}% - 50px)`;
+                priceOutput.textContent = `${formatVND(rangeInput.value)} đ`;
+
+
+            });
+
+
+
+
+            // Set chứa các size và color đã thay đổi
+            let selectedSizes = new Set();
+            let selectedColors = new Set();
+            let selectedSizesTemp = new Set();
+            let selectedColorsTemp = new Set();
+            //let originPrice = parseInt(productPrice.value.replace(/\./g, ""));
+
+            // Hàm format tiền tệ
+            const formatVND = (amount) => {
+                // Chuyển thành số nguyên nếu có phần thập phân
+                const integerAmount = Math.floor(amount);
+                return new Intl.NumberFormat('vi-VN').format(integerAmount); // Định dạng số nguyên
+            };
+
+
+
+
+
+
+            // Xử lý chuyển trang khi bấm edit 1 product
+            btnEdit.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const id = btn.getAttribute("data-id");
+                    fetch(`/Product/Edit/${id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => response.text())  // Chờ nhận dữ liệu dưới dạng HTML (nếu trả về View)
+                        .then(data => {
+                            window.location.href = `/Product/Edit/${id}`;
+                        })
+                        .catch(error => console.error('Error:', error));
+                })
+
+            })
+            let productID = "";
+            // Xử lí khi bấm action delete 1 sản phẩm
+            btnDelete.forEach((btn) => {
+                btn.addEventListener("click", () => {
+
+                    productID = btn.getAttribute("data-id");
+
+                    overlay.classList.add("active");
+                    popup.classList.add("opacity-100", "scale-100")
+
+                })
+            })
+            // Xử lý khi bấm xác nhận xóa
+            confirmDelete.addEventListener("click", () => {
+                fetch(`/Product/Delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: productID
+                    })
+                }).then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            window.location.href = "/Admin/Product";
+                        }
+
+                    }).catch((e) => console.log(e.message))
+            })
+            // Xử lí khi bấm icon X tắt popup
+            turnOffPopup.addEventListener("click", () => {
+                overlay.classList.remove("active");
+                popup.classList.remove("opacity-100", "scale-100")
+            })
+            // Xử lí khi bấm cancel tắt popup
+            btnCancelDelete.addEventListener("click", () => {
+                overlay.classList.remove("active");
+                popup.classList.remove("opacity-100", "scale-100")
+            })
+            // Xử lí bấm ngoài phần popup thì tắt popup
+            overlay.addEventListener("click", (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove("active")
+                    popup.classList.remove("opacity-100", "scale-100")
+                }
+            })
+            // Xử lí dropdown filter
+            btnFilter.addEventListener("click", (e) => {
+                e.stopPropagation();
+                dropDownFilter.classList.add("opacity-100", "scale-100");
+
+            })
+            // Xử lý sự kiện khi click tắt dropdown filter để đóng
+            btnCloseFilter.addEventListener("click", () => {
+                dropDownFilter.classList.remove("opacity-100", "scale-100");
+            });
+
+            // Hàm xử lí render lại các size khi filter
+            function renderContentSize() {
+                sizeContainer.innerHTML = ""
+                selectedSizes.forEach((size) => {
+                    const sizeBox = ` <div class="w-fit rounded border border-gray-400 px-3 py-2 font-medium text-[13px]">${size}</div>`
+                    sizeContainer.innerHTML += sizeBox;
+                })
+            }
+            // Xử lí khi bấm xóa sạch giá trị filter size
+            btnClearFilterSize.addEventListener("click", () => {
+                sizes.value = ""
+                selectedSizesTemp.clear();
+                selectedSizes.clear();
+                renderContentSize();
+
+            })
+
+            // Xử lý khi bấm xóa sạch giá trị filet color
+            btnClearFilterColor.addEventListener("click", () => {
+                colors.value = "";
+                selectedColorsTemp.clear();
+                selectedColors.clear();
+                renderContentColor();
+            })
+            // Xử lí popup khi bấm chọn  filter theo kích cỡ
+            btnSize.addEventListener("click", (e) => {
+
+                e.preventDefault();
+                overlayFilter.classList.add("active");
+                popupFilter.classList.add("opacity-100", "scale-100")
+                popupFilter.innerHTML = `   <span>Kích cỡ</span>
+<div class="mt-5 flex flex-wrap items-center gap-5">
+                                                <label for="s" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                                                    <input type="checkbox" class="size hidden" value="S" id="s" />
+                                                    S
+                                                </label>
+                                                <label for="m" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                                                    <input type="checkbox" class="size hidden" value="M" id="m" />
+                                                    M
+                                                </label>
+                                                <label for="l" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                                                    <input type="checkbox" class="size hidden" value="L" id="l" />
+                                                    L
+                                                </label>
+                                                <label for="xl" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                                                    <input type="checkbox" class="size hidden" value="XL" id="xl" />
+                                                    XL
+                                                </label>
+                                                <label for="xxl" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                                                    <input type="checkbox" class="size hidden" value="XXL" id="xxl" />
+                                                    XXL
+                                                </label>
+
+</div>
+<div class="mt-14 flex items-center justify-end gap-4">
+                                                <button class="lg:text-[14px]" id="cancel">Hủy</button>
+                                                <button id="apply" class="rounded bg-[#4b68ff] px-4 py-2 text-white lg:text-[14px]">Áp dụng</button>
+</div>`
+                sizeEl = document.querySelectorAll(".size");
+
+                btnCancel = document.querySelector("#cancel");
+                btnApply = document.querySelector("#apply");
+                btnApply.addEventListener("click", () => {
+                    overlayFilter.classList.remove("active");
+                    popupFilter.classList.remove("opacity-100", "scale-100")
+                    selectedSizes = new Set(selectedSizesTemp);
+                    sizes.value = [...selectedSizes].join(",");
+                    renderContentSize();
+
+
+                })
+                btnCancel.addEventListener("click", () => {
+                    overlayFilter.classList.remove("active")
+                    popupFilter.classList.remove("opacity-100", "scale-100")
+                })
+
+                sizeEl.forEach((checkbox) => {
+                    checkbox.addEventListener("change", () => {
+                        const label = checkbox.parentElement
+                        if (checkbox.checked) {
+
+                            selectedSizesTemp.add(checkbox.value);
+                            label.classList.add("bg-[#3b82f6]", "text-white")
+                            label.classList.remove("text-[#474B57]")
+
+                        } else {
+                            selectedSizesTemp.delete(checkbox.value);
+                            label.classList.remove("bg-[#3b82f6]", "text-white")
+                            label.classList.add("text-[#474B57]")
+                        }
+
+
+                    });
+
+                });
+            })
+
+            // Hàm xử lý render lại các color khi filter
+            function renderContentColor() {
+                colorContainer.innerHTML = ""
+                selectedColors.forEach((color) => {
+                    const colorBox = ` <div class="w-fit rounded border border-gray-400 px-3 py-2 font-medium text-[13px]">${color}</div>`
+                    colorContainer.innerHTML += colorBox;
+                })
+            }
+
+            // Xử lý popup khi bấm chọn filter theo màu sắc
+            btnColor.addEventListener("click", (e) => {
+                e.preventDefault();
+                overlayFilter.classList.add("active");
+                popupFilter.classList.add("opacity-100", "scale-100")
+                popupFilter.innerHTML = `   <span>Màu sắc</span>
+                                                  <div class="mt-5 flex flex-wrap items-center gap-5">
+                                                    <label for="red" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="đỏ" id="red" />
+                                                Đỏ
+</label>
+
+<label for="blue" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="xanh dương" id="blue" />
+                                                Xanh dương
+</label>
+
+<label for="yellow" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="vàng" id="yellow" />
+                                                Vàng
+</label>
+
+<label for="green" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="xanh lá" id="green" />
+                                                Xanh lá cây
+</label>
+
+<label for="orange" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="cam" id="orange" />
+                                                Cam
+</label>
+
+<label for="purple" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="tím" id="purple" />
+                                                Tím
+</label>
+
+<label for="black" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="đen" id="black" />
+                                                Đen
+</label>
+
+<label for="white" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="trắng" id="white" />
+                                                Trắng
+</label>
+
+<label for="gray" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="xám" id="gray" />
+                                                Xám
+</label>
+
+<label for="brown" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="nâu" id="brown" />
+                                                Nâu
+</label>
+
+<label for="pink" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="hồng" id="pink" />
+                                                Hồng
+</label>
+
+<label for="beige" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+                                                <input type="checkbox" class="color hidden" value="be" id="beige" />
+                                                Be
+</label>
+
+
+
+                                                  </div>
+                                                  <div class="mt-14 flex items-center justify-end gap-4">
+                                                      <button class="lg:text-[14px]" id="cancel">Hủy</button>
+                                                      <button id="apply" class="rounded bg-[#4b68ff] px-4 py-2 text-white lg:text-[14px]">Áp dụng</button>
+                                                  </div>`
+                colorEl = document.querySelectorAll(".color");
+                btnCancel = document.querySelector("#cancel");
+                btnCancel.addEventListener("click", () => {
+                    overlayFilter.classList.remove("active")
+                    popupFilter.classList.remove("opacity-100", "scale-100");
+                })
+                btnApply = document.querySelector("#apply");
+                btnApply.addEventListener("click", () => {
+                    overlayFilter.classList.remove("active");
+                    popupFilter.classList.remove("opacity-100", "scale-100");
+                    selectedColors = new Set(selectedColorsTemp);
+                    colors.value = [...selectedColors].join(",");
+                    renderContentColor();
+                })
+
+                colorEl.forEach((checkbox) => {
+
+                    checkbox.addEventListener("change", () => {
+                        const label = checkbox.parentElement
+                        if (checkbox.checked) {
+
+                            selectedColorsTemp.add(checkbox.value);
+                            label.classList.add("bg-[#3b82f6]", "text-white")
+                            label.classList.remove("text-[#474B57]")
+                        } else {
+                            selectedColorsTemp.delete(checkbox.value);
+                            label.classList.remove("bg-[#3b82f6]", "text-white")
+                            label.classList.add("text-[#474B57]")
+                        }
+
+                    });
+                });
+            })
+
+
+            // Xử lý khi bấm detail
+            btnDetail.forEach((btn) => {
+
+                btn.addEventListener("click", () => {
+                    const productData = btn.getAttribute('data-product');
+                    const result = JSON.parse(productData)
+
+                    overlayDetail.classList.add("active");
+                    contentDetail.classList.add("scale-100", "opacity-100");
+                    contentDetail.classList.remove("translate-x-[100%]")
+                    productImgEl.src = `/Images/Products/${result.Img}`;
+                    productIdEl.textContent = result.ProductID;
+                    productNameEl.textContent = result.ProductName;
+                    creatAtEl.textContent = result.CreatedAt;
+
+                    priceEl.textContent = `${formatVND(result.Price)} đ`;
+                    sizeElRes.textContent = result.Sizes.split(",").join(", ");
+                    colorElRes.textContent = result.Colors.split(",").join(", ");
+                    descrEl.textContent = result.Desc
+                    categoryEl.textContent = result.Category;
+                    updateAtEl.textContent = result.UpdatedAt;
+
+                })
+            })
+
+            // Xử lý khi bấm tắt detail
+            btnCloseDetail.addEventListener("click", () => {
+                overlayDetail.classList.remove("active");
+                contentDetail.classList.remove("scale-100", "opacity-100");
+                contentDetail.classList.add("translate-x-[100%]")
+            })
+        })
+
+
+    </script>
+
+
+
+}

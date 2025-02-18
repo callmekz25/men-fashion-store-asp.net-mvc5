@@ -1,0 +1,590 @@
+﻿
+@{
+    ViewBag.Title = "Thêm sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+
+}
+<style>
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0.2s, opacity 0.2s ease;
+    }
+
+        .overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+    /* Popup content */
+    .popup {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        max-width: 400px;
+    }
+</style>
+<div class="mt-16 pb-20">
+    <div class="popup-overlay overlay">
+        <div class="popup scale-0 opacity-0 transition-all duration-300">
+
+        </div>
+    </div>
+    <span class="font-medium text-[25px]">Thêm sản phẩm</span>
+    <div class="grid-cols-3 mt-10 grid gap-10">
+        <div class="col-span-2 h-fit rounded-lg bg-white p-5">
+            <span class="font-medium text-[18px]">Thông tin cơ bản</span>
+            <div class="mt-8 flex flex-col gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="text-gray-400 text-[15px]">Tên sản phẩm</label>
+                    <input type="text" id="name" class="border-2 rounded-lg border-gray-200 px-2 py-2.5 text-[16px]" />
+                    <span id="error-name" class="text-red-500 text-[13px]"></span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-gray-400 text-[15px]">Chú thích</label>
+                    <textarea id="descr" class="border-2 min-h-[150px] resize-none rounded-lg border-gray-200 px-2 py-2 text-[16px]"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="h-fit rounded-lg bg-white p-5">
+            <span class="font-medium text-[18px]">Ảnh của sản phẩm</span>
+            <div class="mt-8 flex items-center justify-center rounded-xl bg-gray-100 px-4 py-5">
+                <img name="image-product" class="size-[200px] object-contain" id="product-image" />
+            </div>
+            <input type="file" id="post-image" class="hidden" />
+            <label for="post-image" class="mt-4 flex items-center justify-end gap-3 hover:cursor-pointer">
+                <ion-icon name="cloud-upload-outline" class="size-8"></ion-icon>
+                <span class="text-[14px] text-gray-500">Thêm ảnh sản phẩm</span>
+            </label>
+            <div class="flex items-center justify-end">
+                <span id="error-image" class="text-red-500 text-[13px]"></span>
+            </div>
+        </div>
+        <div class="col-span-2 h-fit rounded-lg bg-white p-5 pb-8">
+            <span class="font-medium text-[18px]">Thông tin của sản phẩm</span>
+            <div class="grid-cols-2 mt-8 grid gap-8">
+                <div class="flex flex-col gap-1">
+                    <label class="text-gray-400 text-[15px]">Giá tiền</label>
+                    <input id="price" type="text" class="border-2 rounded-lg border-gray-200 px-2 py-2.5 text-[16px]" />
+                    <span id="error-price" class="text-red-500 text-[13px]"></span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-gray-400 text-[15px]">Loại sản phẩm</label>
+                    <select id="category" class="border-2 rounded-lg border-gray-200 px-2 py-2.5 text-[16px]">
+                        <option value="">Chọn loại áo</option>
+                        <option value="thun">Áo thun</option>
+                        <option value="hoodie">Áo hoodie</option>
+                        <option value="khoác">Áo khoác</option>
+                        <option value="sơ mi">Áo sơ mi</option>
+                        <option value="polo">Áo polo</option>
+                        <option value="sweater">Áo sweater</option>
+                    </select>
+                    <span id="error-category" class="text-red-500 text-[13px]"></span>
+                </div>
+            </div>
+        </div>
+        <div class="h-fit rounded-lg bg-white p-5">
+            <span class="font-medium text-[18px]">Màu sắc và kích cỡ</span>
+            <div class="mt-8 flex flex-col gap-1">
+                <div class="flex items-center justify-between">
+                    <label class="text-gray-400 text-[14px]">Kích cỡ</label>
+                    <button class="delete-sizes font-medium text-blue-500 lg:text-[13px]">Xóa</button>
+                </div>
+                <div id="boxSize" class="border-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border-gray-200 px-2 py-2 text-[16px]">
+                    <div class="size-content flex flex-wrap items-center gap-2">
+                    </div>
+                    <button id="btn-size" class="rounded text-[#4b68ff] lg:text-[13px]">Chọn kích cỡ</button>
+                </div>
+                <span id="error-size" class="text-red-500 text-[13px]"></span>
+            </div>
+            <div class="mt-4 flex flex-col gap-1">
+                <div class="flex items-center justify-between">
+                    <label class="text-gray-400 text-[14px]">Màu sắc</label>
+                    <button class="delete-colors font-medium text-blue-500 lg:text-[13px]">Xóa</button>
+                </div>
+                <div id="boxColor" class="border-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border-gray-200 px-2 py-2 text-[16px]">
+                    <div class="color-content flex flex-wrap items-center gap-3">
+                    </div>
+                    <button id="btn-color" class="rounded text-[#4b68ff] lg:text-[13px]">Chọn màu</button>
+                </div>
+                <span id="error-color" class="text-red-500 text-[13px]"></span>
+            </div>
+        </div>
+        <div class="col-span-2 flex items-center justify-end gap-4">
+            <a href="@Url.Action("Index")" class="rounded-md border border-gray-300 bg-gray-300 px-4 py-2">Quay về</a>
+            <button id="update" class="rounded-md bg-[#4b68ff] px-4 py-2 text-white">Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+
+@section Add {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Nav của layout
+            const nav = document.querySelector("#product");
+            nav.classList.add("bg-[#4b68ff]", "text-white");
+            const btnUpdate = document.querySelector("#update");
+            const priceInput = document.querySelector("#price");
+            const nameInput = document.querySelector("#name");
+            const descrInput = document.querySelector("#descr");
+          
+            const categoryInput = document.querySelector("#category")
+            // Giá trị ban đầu khi chưa edit
+            let originName = nameInput.value;
+            let originDescr = descrInput.value;
+       
+            let originPrice = parseInt(priceInput.value.replace(/\./g, ""));
+            @*let originSize = new Set(JSON.parse('@Html.Raw(Json.Encode(sizes))'));
+            let originColor = new Set(JSON.parse('@Html.Raw(Json.Encode(colors))'));*@
+
+            const sizeContainer = document.querySelector(".size-content");
+            const btnDeleteSizes = document.querySelector(".delete-sizes");
+            const colorContainer = document.querySelector(".color-content");
+            const btnDeleteColors = document.querySelector(".delete-colors");
+
+            // Validate
+            const errorName = document.querySelector("#error-name");
+           
+            const errorPrice = document.querySelector("#error-price");
+            const errorCategory = document.querySelector("#error-category");
+            const errorImage = document.querySelector("#error-image")
+            const errorSize = document.querySelector("#error-size");
+            const errorColor = document.querySelector("#error-color");
+            const boxSize = document.querySelector("#boxSize");
+            const boxColor = document.querySelector("#boxColor");
+            let sizeEl;
+            let colorEl;
+            let btnCancel;
+            const btnSize = document.querySelector("#btn-size");
+            const btnColor = document.querySelector("#btn-color");
+            const fileInput = document.querySelector("#post-image");
+            const imagePreview = document.querySelector("#product-image");
+            // Popup và nền
+            const overlay = document.querySelector(".popup-overlay");
+            const popup = document.querySelector(".popup");
+
+            if (imagePreview.src === "") {
+                imagePreview.classList.add("opacity-0")
+            }
+            // Hiện ảnh tạm thời sau khi tải ảnh
+            fileInput.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+
+                    const url = URL.createObjectURL(file);
+                    imagePreview.src = url;
+                
+                    imagePreview.classList.remove("opacity-0")
+                    errorImage.textContent = ""
+                }
+            })
+
+            // Set chứa các size và color đã thay đổi
+            let selectedSizes = new Set();
+            let selectedColors = new Set();
+            let selectedSizesTemp = new Set();
+            let selectedColorsTemp = new Set();
+
+
+            // Hàm format tiền tệ
+            const formatVND = (amount) => {
+                // Chuyển thành số nguyên nếu có phần thập phân
+                const integerAmount = Math.floor(amount);
+                return new Intl.NumberFormat('vi-VN').format(integerAmount); // Định dạng số nguyên
+            };
+
+            // Hàm render lại list size đã chọn
+            function renderSelectedSize() {
+                sizeContainer.innerHTML = "";
+                selectedSizes.forEach((size) => {
+                    const sizeBox = ` <div class="w-fit rounded border border-gray-400 px-3 py-2 font-medium text-[13px]">${size}</div>`
+                    sizeContainer.innerHTML += sizeBox;
+                })
+            }
+
+            // Hàm render lại list color đã chọn
+            function renderSelectedColor() {
+                colorContainer.innerHTML = "";
+                selectedColors.forEach((color) => {
+                    const colorBox = ` <div class="w-fit rounded border border-gray-400 px-3 py-2 font-medium text-[13px]">${color}</div>`
+                    colorContainer.innerHTML += colorBox;
+                })
+            }
+
+            // Xử lý xóa các giá trị sizes khi bấm xóa
+            btnDeleteSizes.addEventListener("click", () => {
+                selectedSizes.clear();
+                selectedSizesTemp.clear();
+                renderSelectedSize();
+
+            })
+
+            // Xử lý xóa các giá trị colors khi bấm xóa
+            btnDeleteColors.addEventListener("click", () => {
+                selectedColors.clear();
+                selectedColorsTemp.clear();
+                renderSelectedColor();
+
+            })
+
+            // Khi click thay đổi các size của sản phẩm
+            btnSize.addEventListener("click", () => {
+
+                overlay.classList.add("active")
+                popup.classList.add("opacity-100", "scale-100");
+                popup.innerHTML = `   <span>Kích cỡ</span>
+          <div class="mt-5 flex flex-wrap items-center gap-5">
+              <label for="s" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                  <input type="checkbox" class="size hidden" value="S" id="s" />
+                  S
+              </label>
+              <label for="m" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                  <input type="checkbox" class="size hidden" value="M" id="m" />
+                  M
+              </label>
+              <label for="l" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                  <input type="checkbox" class="size hidden" value="L" id="l" />
+                  L
+              </label>
+              <label for="xl" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                  <input type="checkbox" class="size hidden" value="XL" id="xl" />
+                  XL
+              </label>
+              <label for="xxl" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:text-white hover:bg-[#3b82f6] lg:text-[14px]">
+                  <input type="checkbox" class="size hidden" value="XXL" id="xxl" />
+                  XXL
+              </label>
+
+          </div>
+          <div class="mt-14 flex items-center justify-end gap-4">
+              <button class="lg:text-[14px]" id="cancel">Hủy</button>
+              <button id="apply" class="rounded bg-[#4b68ff] px-4 py-2 text-white lg:text-[14px]">Áp dụng</button>
+          </div>`
+                sizeEl = document.querySelectorAll(".size");
+                btnCancel = document.querySelector("#cancel");
+                btnApply = document.querySelector("#apply");
+                btnApply.addEventListener("click", () => {
+                    overlay.classList.remove("active");
+                    popup.classList.remove("opacity-100", "scale-100");
+                    selectedSizes = new Set(selectedSizesTemp);
+                    selectedSizesTemp.clear();
+                    errorSize.textContent = "";
+                    boxSize.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    renderSelectedSize();
+                })
+                btnCancel.addEventListener("click", () => {
+                    overlay.classList.remove("active");
+                    popup.classList.remove("opacity-100", "scale-100");
+                    selectedSizesTemp.clear();
+
+                })
+
+                sizeEl.forEach((checkbox) => {
+
+                    checkbox.addEventListener("change", () => {
+                        const label = checkbox.parentElement
+                        if (checkbox.checked) {
+
+                            selectedSizesTemp.add(checkbox.value);
+                            label.classList.add("bg-[#3b82f6]", "text-white")
+                            label.classList.remove("text-[#474B57]")
+
+                        } else {
+                            selectedSizesTemp.delete(checkbox.value);
+                            label.classList.remove("bg-[#3b82f6]", "text-white")
+                            label.classList.add("text-[#474B57]")
+                        }
+
+
+                    });
+                });
+
+            })
+
+            // Khi click thay đổi các color của sản phẩm
+            btnColor.addEventListener("click", () => {
+                overlay.classList.add("active");
+                popup.classList.add("opacity-100", "scale-100");
+                popup.innerHTML = `   <span>Màu sắc</span>
+          <div class="mt-5 flex flex-wrap items-center gap-5">
+            <label for="red" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="đỏ" id="red" />
+        Đỏ
+</label>
+
+<label for="blue" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="xanh dương" id="blue" />
+        Xanh dương
+</label>
+
+<label for="yellow" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="vàng" id="yellow" />
+        Vàng
+</label>
+
+<label for="green" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="xanh lá" id="green" />
+        Xanh lá cây
+</label>
+
+<label for="orange" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="cam" id="orange" />
+        Cam
+</label>
+
+<label for="purple" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="tím" id="purple" />
+        Tím
+</label>
+
+<label for="black" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="đen" id="black" />
+        Đen
+</label>
+
+<label for="white" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="trắng" id="white" />
+        Trắng
+</label>
+
+<label for="gray" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="xám" id="gray" />
+        Xám
+</label>
+
+<label for="brown" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="nâu" id="brown" />
+        Nâu
+</label>
+
+<label for="pink" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="hồng" id="pink" />
+        Hồng
+</label>
+
+<label for="beige" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="be" id="beige" />
+        Be
+</label>
+    <label for="navy" class="group-hover:cursor-pointer rounded border border-gray-400 px-3 py-2 font-medium text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-blue-500 hover:text-white lg:text-[14px]">
+        <input type="checkbox" class="color hidden" value="xanh navy" id="navy" />
+        Xanh navy
+</label>
+
+
+
+          </div>
+          <div class="mt-14 flex items-center justify-end gap-4">
+              <button class="lg:text-[14px]" id="cancel">Hủy</button>
+              <button id="apply" class="rounded bg-[#4b68ff] px-4 py-2 text-white lg:text-[14px]">Áp dụng</button>
+          </div>`
+                colorEl = document.querySelectorAll(".color");
+                btnCancel = document.querySelector("#cancel");
+                btnCancel.addEventListener("click", () => {
+                    overlay.classList.remove("active")
+                    popup.classList.remove("opacity-100", "scale-100");
+                    selectedColorsTemp.clear();
+                })
+                btnApply = document.querySelector("#apply");
+                btnApply.addEventListener("click", () => {
+                    overlay.classList.remove("active");
+                    popup.classList.remove("opacity-100", "scale-100");
+                    selectedColors = new Set(selectedColorsTemp);
+                    selectedColorsTemp.clear();
+                    errorColor.textContent = "";
+                    boxColor.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    renderSelectedColor();
+                })
+
+                colorEl.forEach((checkbox) => {
+
+                    checkbox.addEventListener("change", () => {
+                        const label = checkbox.parentElement
+                        if (checkbox.checked) {
+
+                            selectedColorsTemp.add(checkbox.value);
+                            label.classList.add("bg-[#3b82f6]", "text-white")
+                            label.classList.remove("text-[#474B57]")
+                        } else {
+                            selectedColorsTemp.delete(checkbox.value);
+                            label.classList.remove("bg-[#3b82f6]", "text-white")
+                            label.classList.add("text-[#474B57]")
+                        }
+
+                    });
+                });
+            })
+
+            // Click ra ngoài popup thì tắt
+            overlay.addEventListener("click", (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove("active")
+                    popup.classList.remove("opacity-100", "scale-100");
+                    selectedSizes.clear();
+                    selectedColors.clear();
+                }
+
+            })
+            // Price
+            let parsedPrice = originPrice;
+            priceInput.addEventListener("input", () => {
+                // Loại bỏ tất cả ký tự không phải số
+                let rawValue = priceInput.value.replace(/\D/g, "");
+                // Loại bỏ dấu .
+                let priceWithoutDot = rawValue.replace(/\./g, "");
+
+                if (rawValue) {
+                    // Định dạng lại giá trị khi người dùng nhập
+                    const formattedPrice = formatVND(rawValue);
+                    parsedPrice = parseInt(priceWithoutDot, 10);
+                    // Cập nhật giá trị của input mà không mất dữ liệu đã nhập
+                    priceInput.value = formattedPrice;
+
+                }
+            });
+
+
+            nameInput.addEventListener("input", () => {
+                errorName.textContent = "";
+                nameInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+           
+            priceInput.addEventListener("input", () => {
+                errorPrice.textContent = "";
+                priceInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+            categoryInput.addEventListener("input", () => {
+                errorCategory.textContent = "";
+                categoryInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+            
+            
+
+            // Khi bấm lưu thay đổi thì post lên database bên backend sẽ check dữ liệu có thay đổi không rồi mới update db
+            btnUpdate.addEventListener("click", () => {
+                let flag = false;
+                if (nameInput.value === "") {
+                    errorName.textContent = "Tên sản phẩm không được trống";
+                    nameInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true;
+                } else {
+                    errorName.textContent = "";
+                    nameInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                
+                if (priceInput.value === "") {
+                    errorPrice.textContent = "Vui lòng nhập giá tiền";
+                    priceInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true;
+                } else {
+                    errorPrice.textContent = "";
+                    priceInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (categoryInput.value === "") {
+                    errorCategory.textContent = "Vui lòng chọn loại";
+                    categoryInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true;
+                } else {
+                    errorCategory.textContent = "";
+                    categoryInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (!fileInput.files[0]) {
+                    errorImage.textContent = "Vui lòng chọn ảnh";
+                    flag = true;
+                } else {
+                    errorImage.textContent = "";
+                }
+                if (selectedSizes.size === 0) {
+                    flag = true;
+                    errorSize.textContent = "Vui lòng chọn kích cỡ";
+                    boxSize.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorSize.textContent = "";
+                    boxSize.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (selectedColors.size === 0) {
+                    flag = true;
+                    errorColor.textContent = "Vui lòng chọn màu sắc";
+                    boxColor.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorColor.textContent = "";
+                    boxColor.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (flag === false) {
+                    // Dùng formData vì phải lấy request file từ bên controller
+                    const formData = new FormData();
+                    formData.append("name", nameInput.value);
+                    formData.append("descr", descrInput.value);
+                 
+                    formData.append("price", parsedPrice);
+                    formData.append("category", categoryInput.value);
+                    formData.append("img", fileInput.files[0]);  // Đảm bảo file được chọn từ input
+                    formData.append("size", [...selectedSizes].join(","));
+                    formData.append("color", [...selectedColors].join(","));
+                    fetch(`/Product/Add`, {
+                        method: 'POST',
+
+                        body: formData
+
+                    }).then((response) => response.json())
+                        .then((data) => {
+                            if (!data.success) {
+                                console.log(data.message);
+                            } else {
+                                Toastify({
+                                    text: data.message,
+                                    className: "info",
+                                    position: "center",
+                                    duration: 2000,
+                                    //avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                    avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        fontSize: "16px",
+
+                                    },
+
+                                }).showToast();
+                                nameInput.value = "";
+                                descrInput.value = "";
+                               
+                                priceInput.value = "";
+                                categoryInput.value = "";
+                                imagePreview.classList.add("opacity-0")
+                                imagePreview.src = "";
+                                fileInput.value = ""
+                                selectedSizes.clear();
+                                selectedSizesTemp.clear();
+                                renderSelectedSize();
+                                selectedColors.clear();
+                                selectedColorsTemp.clear();
+                                renderSelectedColor();
+
+
+                            }
+                        })
+                }
+
+            })
+
+        })
+
+    </script>
+
+
+}

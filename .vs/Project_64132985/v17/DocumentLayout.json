@@ -1,0 +1,138 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|c:\\users\\vinh\\source\\repos\\quanlythoitrang_64132985\\project_64132985\\areas\\admin\\views\\adminproduct_64132985\\add.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|solutionrelative:project_64132985\\areas\\admin\\views\\adminproduct_64132985\\add.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|c:\\users\\vinh\\source\\repos\\quanlythoitrang_64132985\\project_64132985\\areas\\admin\\views\\dashboard_64132985\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|solutionrelative:project_64132985\\areas\\admin\\views\\dashboard_64132985\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\project_64132985\\app_start\\adminauthorize_64132985.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|solutionrelative:project_64132985\\app_start\\adminauthorize_64132985.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\project_64132985\\areas\\admin\\views\\shared\\_layoutadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|solutionrelative:project_64132985\\areas\\admin\\views\\shared\\_layoutadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\project_64132985\\views\\home_64132985\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|solutionrelative:project_64132985\\views\\home_64132985\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\project_64132985\\controllers\\home_64132985controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|solutionrelative:project_64132985\\controllers\\home_64132985controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\project_64132985\\views\\home_64132985\\signup.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F2DD575D-9A5B-4675-913C-F1BC7A23235D}|Project_64132985\\Project_64132985.csproj|solutionrelative:project_64132985\\views\\home_64132985\\signup.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Add.cshtml",
+              "DocumentMoniker": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Areas\\Admin\\Views\\AdminProduct_64132985\\Add.cshtml",
+              "RelativeDocumentMoniker": "Project_64132985\\Areas\\Admin\\Views\\AdminProduct_64132985\\Add.cshtml",
+              "ToolTip": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Areas\\Admin\\Views\\AdminProduct_64132985\\Add.cshtml",
+              "RelativeToolTip": "Project_64132985\\Areas\\Admin\\Views\\AdminProduct_64132985\\Add.cshtml",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAACMAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-15T11:27:24.65Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Areas\\Admin\\Views\\Dashboard_64132985\\Index.cshtml",
+              "RelativeDocumentMoniker": "Project_64132985\\Areas\\Admin\\Views\\Dashboard_64132985\\Index.cshtml",
+              "ToolTip": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Areas\\Admin\\Views\\Dashboard_64132985\\Index.cshtml",
+              "RelativeToolTip": "Project_64132985\\Areas\\Admin\\Views\\Dashboard_64132985\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMYAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-12T11:38:40.764Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AdminAuthorize_64132985.cs",
+              "DocumentMoniker": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\App_Start\\AdminAuthorize_64132985.cs",
+              "RelativeDocumentMoniker": "Project_64132985\\App_Start\\AdminAuthorize_64132985.cs",
+              "ToolTip": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\App_Start\\AdminAuthorize_64132985.cs",
+              "RelativeToolTip": "Project_64132985\\App_Start\\AdminAuthorize_64132985.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-12T08:40:24.723Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "_LayoutAdmin.cshtml",
+              "DocumentMoniker": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Areas\\Admin\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "RelativeDocumentMoniker": "Project_64132985\\Areas\\Admin\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "ToolTip": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Areas\\Admin\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "RelativeToolTip": "Project_64132985\\Areas\\Admin\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-12T08:40:15.383Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Signup.cshtml",
+              "DocumentMoniker": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Views\\Home_64132985\\Signup.cshtml",
+              "RelativeDocumentMoniker": "Project_64132985\\Views\\Home_64132985\\Signup.cshtml",
+              "ToolTip": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Views\\Home_64132985\\Signup.cshtml",
+              "RelativeToolTip": "Project_64132985\\Views\\Home_64132985\\Signup.cshtml",
+              "ViewState": "AgIAALEAAAAAAAAAAAAAAGkAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-11T19:05:34.946Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Views\\Home_64132985\\Login.cshtml",
+              "RelativeDocumentMoniker": "Project_64132985\\Views\\Home_64132985\\Login.cshtml",
+              "ToolTip": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Views\\Home_64132985\\Login.cshtml",
+              "RelativeToolTip": "Project_64132985\\Views\\Home_64132985\\Login.cshtml",
+              "ViewState": "AgIAANwAAAAAAAAAAAAAAOUAAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-11T18:57:49.03Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Home_64132985Controller.cs",
+              "DocumentMoniker": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Controllers\\Home_64132985Controller.cs",
+              "RelativeDocumentMoniker": "Project_64132985\\Controllers\\Home_64132985Controller.cs",
+              "ToolTip": "C:\\Users\\VINH\\source\\repos\\QuanLyThoiTrang_64132985\\Project_64132985\\Controllers\\Home_64132985Controller.cs",
+              "RelativeToolTip": "Project_64132985\\Controllers\\Home_64132985Controller.cs",
+              "ViewState": "AgIAAIsAAAAAAAAAAAAwwI0AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-11T18:51:37.633Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

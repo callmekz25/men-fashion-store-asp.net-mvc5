@@ -1,0 +1,503 @@
+﻿
+@{
+    ViewBag.Title = "Bộ sưu tập";
+}
+<style>
+    .overlay-filter {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        display: flex;
+        justify-content: center;
+        align-items: end;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+    }
+
+        .overlay-filter.active {
+            visibility: visible;
+            opacity: 1;
+        }
+</style>
+<div class="mb-10">
+    <div class="bg-[#f6f6f6] p-6 py-10 lg:px-[100px] lg:py-8">
+        <div class="flex items-center gap-3" data-aos="fade-right">
+            <span class="font-semibold text-[20px] lg:text-[19px]">Sản phẩm</span>
+        </div>
+    </div>
+    <div class="overlay-filter">
+        <div class="filter-content opacity-0 duration-[400ms] w-full translate-y-[100%] rounded-t-xl bg-white transition-all">
+            <div class="flex items-center justify-end border-b border-gray-300 px-4 py-4">
+                <button id="close-filter">
+
+                    <ion-icon class="size-9" name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="max-h-[550px] overflow-y-scroll px-5 py-4">
+                <div class="mt-4">
+                    <span class="text-[19px] text-gray-400">Giá tiền</span>
+                    <div class="flex w-full items-center gap-4">
+                        <div class="slider-container mt-8 w-full">
+                            <div class="slider-wrapper relative">
+                                <input type="range" id="price-range-mb" min="100000" max="2000000" value="100000" class="w-full" step="50000">
+                                <div class="top-[-125%] absolute left-0 rounded-full bg-black px-2 py-1 font-medium text-white text-[14px]" id="price-output-mb">100.000 đ</div>
+                            </div>
+                            <div class="flex items-center justify-between text-[17px]">
+                                <span>100.000đ</span>
+                                <span>2.000.000đ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <span class="text-[19px] text-gray-400">Loại mặt hàng</span>
+                    <div class="grid-cols-2 grid w-full gap-x-14">
+                        @foreach (var cate in ViewBag.Categories)
+                        {
+                            <div class="flex items-center gap-4 py-4">
+                                <input type="checkbox" id="@cate-mb" class="category size-5 rounded hover:cursor-pointer" value="@cate" />
+                                <label class="text-[18px]" for="@cate-mb">Áo @cate</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <span class="text-[19px] text-gray-400">Màu sắc</span>
+                    <div class="mt-4 flex flex-wrap items-center gap-4">
+                        @foreach (var color in ViewBag.Colors)
+                        {
+                            <label for="@color-mb" class="rounded border border-gray-300 px-4 py-3 text-[#474B57] text-[18px] transition-all duration-300">
+                                <input type="checkbox" class="color hidden" value="@color" id="@color-mb" />
+                                @color
+                            </label>
+                        }
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <span class="text-[19px] text-gray-400">Kích cỡ</span>
+                    <div class="mt-4 flex flex-wrap items-center gap-4">
+                        <label for="s-mb" class="rounded border border-gray-300 px-5 py-3 text-[#474B57] text-[18px] transition-all duration-300">
+                            <input type="checkbox" class="size hidden" value="S" id="s-mb" />
+                            S
+                        </label>
+                        <label for="m-mb" class="rounded border border-gray-300 px-5 py-3 text-[#474B57] text-[18px] transition-all duration-300">
+                            <input type="checkbox" class="size hidden" value="M" id="m-mb" />
+                            M
+                        </label>
+                        <label for="l-mb" class="rounded border border-gray-300 px-5 py-3 text-[#474B57] text-[18px] transition-all duration-300">
+                            <input type="checkbox" class="size hidden" value="L" id="l-mb" />
+                            L
+                        </label>
+                        <label for="xl-mb" class="rounded border border-gray-300 px-5 py-3 text-[#474B57] text-[18px] transition-all duration-300">
+                            <input type="checkbox" class="size hidden" value="XL" id="xl-mb" />
+                            XL
+                        </label>
+                        <label for="xxl-mb" class="rounded border border-gray-300 px-5 py-3 text-[#474B57] text-[18px] transition-all duration-300">
+                            <input type="checkbox" class="size hidden" value="XXL" id="xxl-mb" />
+                            XXL
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+            <div class="flex flex-col gap-3 border-t border-gray-300 px-5 py-4 text-[17px]">
+                <button id="apply-filter" class="w-full bg-black py-3.5 text-white">Hoàn tất</button>
+                <button id="reset-filter" class="border border-black py-3">Xóa tất cả</button>
+            </div>
+        </div>
+    </div>
+    <div class="mt-14 px-6 lg:px-[100px]">
+        <div class="flex items-center justify-end lg:hidden">
+            <button id="filter" class="border-2 flex items-center gap-2 rounded-md border-gray-300 px-6 py-2 text-[18px]">
+                Bộ lọc <ion-icon name="filter-outline" class="size-6"></ion-icon>
+            </button>
+        </div>
+        <div class="flex">
+            @*Sidebar filter*@
+            <div class="hidden h-fit min-w-[250px] max-w-[250px] rounded border border-gray-200 px-4 py-6 lg:block">
+                <span class="font-medium lg:text-[16px]">Danh mục</span>
+                <div class="mt-4 text-[#474B57] lg:text-[14px]">
+                    @foreach (var cate in ViewBag.Categories)
+                    {
+                        <div class="flex items-center gap-3 border-b border-gray-200 py-4">
+                            <input type="checkbox" class="category size-4 hover:cursor-pointer" value="@cate" id="@cate" />
+                            <label for="@cate">Áo @cate</label>
+                        </div>
+
+                    }
+                </div>
+                @*Color*@
+                <div class="mt-8">
+                    <span class="font-medium lg:text-[16px]">Màu sắc</span>
+                    <div class="mt-4 flex flex-wrap items-center gap-3">
+                        @foreach (var color in ViewBag.Colors)
+                        {
+                            <label for="@color" class="group-hover:cursor-pointer group-hover:text-black rounded border border-gray-200 px-3 py-1.5 text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-[#e5e7eb] lg:text-[14px]">
+                                <input type="checkbox" class="color hidden" value="@color" id="@color" />
+                                @color
+                            </label>
+
+                        }
+
+                    </div>
+                </div>
+                @*Size*@
+                <div class="mt-8">
+                    <span class="font-medium lg:text-[16px]">Kích cỡ</span>
+                    <div class="mt-4 flex flex-wrap items-center gap-3">
+                        <label for="s" class="group-hover:cursor-pointer group-hover:text-black rounded border border-gray-200 px-3 py-2 text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-[#e5e7eb] lg:text-[14px]">
+                            <input type="checkbox" class="size hidden" value="S" id="s" />
+                            S
+                        </label>
+                        <label for="m" class="group-hover:cursor-pointer group-hover:text-black rounded border border-gray-200 px-3 py-2 text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-[#e5e7eb] lg:text-[14px]">
+                            <input type="checkbox" class="size hidden" value="M" id="m" />
+                            M
+                        </label>
+                        <label for="l" class="group-hover:cursor-pointer group-hover:text-black rounded border border-gray-200 px-3 py-2 text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-[#e5e7eb] lg:text-[14px]">
+                            <input type="checkbox" class="size hidden" value="L" id="l" />
+                            L
+                        </label>
+                        <label for="xl" class="group-hover:cursor-pointer group-hover:text-black rounded border border-gray-200 px-3 py-2 text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-[#e5e7eb] lg:text-[14px]">
+                            <input type="checkbox" class="size hidden" value="XL" id="xl" />
+                            XL
+                        </label>
+                        <label for="xxl" class="group-hover:cursor-pointer group-hover:text-black rounded border border-gray-200 px-3 py-2 text-[#474B57] transition-all duration-300 hover:cursor-pointer hover:bg-[#e5e7eb] lg:text-[14px]">
+                            <input type="checkbox" class="size hidden" value="XXL" id="xxl" />
+                            XXL
+                        </label>
+                    </div>
+                </div>
+                @*Price*@
+                <div class="mt-8">
+                    <span class="font-medium lg:text-[16px]">Giá tiền</span>
+                    <div class="slider-container mt-8">
+                        <div class="slider-wrapper relative">
+                            <input type="range" id="price-range" min="100000" max="2000000" value="100000" class="w-full" step="50000">
+                            <div class="top-[-125%] absolute left-0 rounded-full bg-black px-2 py-1 font-medium text-white lg:text-[13px]" id="price-output">100.000 đ</div>
+                        </div>
+                        <div class="flex items-center justify-between lg:text-[13px]">
+                            <span>100.000đ</span>
+                            <span>2.000.000đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*List products & applied filter*@
+            <div class="w-full py-4 lg:ml-10">
+
+                <div class="grid-cols-2 mt-10 grid gap-4 lg:grid-cols-3 lg:gap-10" id="product-list">
+
+                </div>
+                <div class="mt-20 flex items-center justify-center space-x-4" id="pagination">
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+@section OurProduct{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const ourProduct = document.querySelector("#our-product");
+            ourProduct.classList.add("text-black", "border-b", "border-black");
+
+            const pageSize = 6; // Số sản phẩm mỗi trang
+            let currentPage = 1; // Trang hiện tại
+            let totalPages = 1; // Tổng số trang
+            let paginationEl = document.getElementById('pagination');
+
+            const rangeInput = document.getElementById('price-range');
+            const priceOutput = document.querySelector("#price-output");
+            const rangeInputMobile = document.getElementById('price-range-mb');
+            const priceOutputMobile = document.querySelector("#price-output-mb");
+
+            const btnFilter = document.querySelector("#filter");
+            const btnCloseFilter = document.querySelector("#close-filter");
+            const overlayFilter = document.querySelector(".overlay-filter");
+            const filterContent = document.querySelector(".filter-content");
+            const btnApplyFilter = document.querySelector("#apply-filter");
+            const btnResetFilter = document.querySelector("#reset-filter");
+
+            btnFilter.addEventListener("click", () => {
+                overlayFilter.classList.add("active");
+                filterContent.classList.add("translate-y-0", "opacity-100");
+            })
+            btnCloseFilter.addEventListener("click", () => {
+                overlayFilter.classList.remove("active");
+                filterContent.classList.remove("translate-y-0", "opacity-100");
+            })
+
+            btnApplyFilter.addEventListener("click", () => {
+                overlayFilter.classList.remove("active");
+                filterContent.classList.remove("translate-y-0", "opacity-100");
+            })
+            btnResetFilter.addEventListener("click", () => {
+                selectedCategories.clear();
+                selectedColors.clear();
+                selectedSizes.clear();
+                rangeInputMobile.value = 100000;
+                rangeInput.value = 100000
+
+                categoryEl.forEach((checkbox) => {
+                    checkbox.checked = false
+                })
+
+                colorEl.forEach((checkbox) => {
+                    const label = checkbox.parentElement
+                    label.classList.remove("bg-[#e5e7eb]")
+                });
+                sizeEl.forEach((checkbox) => {
+                    const label = checkbox.parentElement
+                    label.classList.remove("bg-[#e5e7eb]")
+                });
+
+                filterProducts();
+            })
+
+
+            const formatVND = (amount) => {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            };
+            // Sự kiện 'input' để cập nhật giá trị trong khi kéo
+            rangeInput.addEventListener('input', () => {
+
+                const value = rangeInput.value;
+                const min = rangeInput.min;
+                const max = rangeInput.max;
+
+                // Tính toán tỷ lệ phần trăm của giá trị
+                const percentage = (value - min) / (max - min);
+
+                const position = percentage * 100; // Ví dụ, sẽ trả về giá trị từ 0 đến 100 (theo phần trăm)
+                priceOutput.style.left = `calc(${position}% - 30px)`;
+                priceOutput.textContent = `${formatVND(rangeInput.value)}`;
+
+
+            });
+            rangeInputMobile.addEventListener('input', () => {
+
+                const value = rangeInputMobile.value;
+                const min = rangeInputMobile.min;
+                const max = rangeInputMobile.max;
+
+                // Tính toán tỷ lệ phần trăm của giá trị
+                const percentage = (value - min) / (max - min);
+
+                const position = percentage * 100; // Ví dụ, sẽ trả về giá trị từ 0 đến 100 (theo phần trăm)
+                priceOutputMobile.style.left = `calc(${position}% - 30px)`;
+                priceOutputMobile.textContent = `${formatVND(rangeInputMobile.value)}`;
+
+
+            });
+            // Hàm lấy ra vị trí của nút range để hiển thị số tiền đang range
+            rangeInputMobile.addEventListener('change', () => {
+                window.scrollTo(0, 0);
+                const value = rangeInputMobile.value;
+                const min = rangeInputMobile.min;
+                const max = rangeInputMobile.max;
+
+                // Tính toán tỷ lệ phần trăm của giá trị
+                const percentage = (value - min) / (max - min);
+
+
+                const position = percentage * 100; // Ví dụ, sẽ trả về giá trị từ 0 đến 100 (theo phần trăm)
+                priceOutputMobile.style.left = `calc(${position}% - 30px)`;
+                priceOutputMobile.textContent = `${formatVND(rangeInputMobile.value)}`;
+
+                filterProducts();
+            });
+            // Hàm lấy ra vị trí của nút range để hiển thị số tiền đang range
+            rangeInput.addEventListener('change', () => {
+                window.scrollTo(0, 0);
+                const value = rangeInput.value;
+                const min = rangeInput.min;
+                const max = rangeInput.max;
+
+                // Tính toán tỷ lệ phần trăm của giá trị
+                const percentage = (value - min) / (max - min);
+
+
+                const position = percentage * 100; // Ví dụ, sẽ trả về giá trị từ 0 đến 100 (theo phần trăm)
+                priceOutput.style.left = `calc(${position}% - 30px)`;
+                priceOutput.textContent = `${formatVND(rangeInput.value)}`;
+
+                filterProducts();
+            });
+
+
+
+
+
+            let products;
+            const categoryEl = document.querySelectorAll(".category");
+            const colorEl = document.querySelectorAll(".color");
+            const sizeEl = document.querySelectorAll(".size");
+            let productList = document.getElementById('product-list');
+            let selectedCategories = new Set();
+            let selectedColors = new Set();
+            let selectedSizes = new Set();
+            // Hiển thị pagination
+            function renderPagination(totalPages) {
+                paginationEl.innerHTML = '';
+                for (i = 0; i < totalPages; i++) {
+                    const btnPagination = document.createElement("button");
+                    btnPagination.classList.add("px-4", "btn-pagination", "py-2", "bg-gray-100", "rounded-md", "hover:bg-gray-300", "transition-all", "duration-300");
+                    btnPagination.textContent = i + 1;
+                    paginationEl.appendChild(btnPagination)
+                    if (i + 1 === currentPage) {
+                        btnPagination.classList.add("bg-gray-300"); // Nút active
+                    }
+                }
+
+
+                const btnPag = document.querySelectorAll(".btn-pagination");
+                btnPag.forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        currentPage = parseInt(btn.textContent);
+                        window.scrollTo(0, 0);
+                        filterProducts()
+                    })
+                })
+            }
+
+            function renderProducts(data) {
+                productList.innerHTML = "";
+                const startIndex = (currentPage - 1) * pageSize;
+                const endIndex = currentPage * pageSize;
+                const pageData = data.slice(startIndex, endIndex);
+
+                if (pageData.length > 0) {
+
+                    pageData.forEach(product => {
+                        const productCard = `
+                                                                <div class="flex flex-col gap-3 overflow-hidden" data-aos="">
+                                                                    <div class="flex items-center justify-center rounded-md bg-[#F6F6F6] p-0 lg:p-6">
+                                                                        <a href="ProductDetail/${product.ProductID}">
+                                                                            <img src="/Images/Products/${product.Img}" class="h-[300px] w-[350px] object-contain" />
+                                                                        </a>
+                                                                    </div>
+                                                                    <span class="mt-3 truncate font-medium text-[20px] lg:text-[18px]">${product.ProductName}</span>
+
+                                                                        <span class="text-[#474B57] text-[18px] lg:text-[17px]">${formatVND(product.Price)}</span>
+                                                                </div>
+`;
+                        productList.innerHTML += productCard;
+                    });
+                } else {
+                    productList.innerHTML = `  <div class="col-span-3 mt-[100px] flex items-center justify-center">
+                                        <span class="text-[#474B57] lg:text-[16px]">Không tìm thấy sản phẩm phù hợp</span>
+                                            </div>`
+                }
+            }
+
+            function filterProducts() {
+                let filtered = [...products];
+
+                // Filter by category
+                if (selectedCategories.size > 0) {
+                    filtered = filtered.filter((p) =>
+                        [...selectedCategories].some((category) => p.Category.includes(category))
+                    );
+
+                }
+
+                // Filter by color
+                if (selectedColors.size > 0) {
+                    filtered = filtered.filter((p) =>
+                        [...selectedColors].some((color) => p.Colors.includes(color))
+                    );
+                }
+                // Filter by size
+                if (selectedSizes.size > 0) {
+                    filtered = filtered.filter((p) => [...selectedSizes].some((size) => p.Sizes.includes(size)));
+                }
+                if (rangeInput.value > 100000) {
+                    filtered = filtered.filter((p) => p.Price <= rangeInput.value);
+                }
+                if (rangeInputMobile.value > 100000) {
+                    filtered = filtered.filter((p) => p.Price <= rangeInputMobile.value);
+                }
+                // Tính lại số page dựa vào số product
+                totalPages = Math.ceil(filtered.length / pageSize);
+
+                // Reset lại page là 1
+                if (currentPage > totalPages) {
+                    currentPage = 1;
+                }
+                window.scrollTo(0, 0);
+                renderPagination(totalPages)
+                renderProducts(filtered);
+            }
+            // Filter categories by checkbox
+            categoryEl.forEach((checkbox) => {
+                checkbox.addEventListener("change", () => {
+                    if (checkbox.checked) {
+                        selectedCategories.add(checkbox.value);
+                    } else {
+                        selectedCategories.delete(checkbox.value);
+                    }
+
+                    filterProducts();
+                });
+            });
+            // Filter colors by checkbox
+            colorEl.forEach((checkbox) => {
+                checkbox.addEventListener("change", () => {
+                    const label = checkbox.parentElement
+                    if (checkbox.checked) {
+                        console.log("checked")
+                        selectedColors.add(checkbox.value);
+                        label.classList.add("bg-[#e5e7eb]")
+                    } else {
+                        selectedColors.delete(checkbox.value);
+                        label.classList.remove("bg-[#e5e7eb]")
+                        console.log("remove")
+                    }
+                    filterProducts();
+                });
+            });
+            // Filter sizes by checkbox
+            sizeEl.forEach((checkbox) => {
+                checkbox.addEventListener("change", () => {
+                    const label = checkbox.parentElement;
+                    if (checkbox.checked) {
+                        selectedSizes.add(checkbox.value);
+                        label.classList.add("bg-[#e5e7eb]");
+                    } else {
+                        selectedSizes.delete(checkbox.value);
+                        label.classList.remove("bg-[#e5e7eb]");
+                    }
+                    filterProducts()
+                })
+            })
+            // Gọi dữ liệu từ db
+            fetch("/Products_64132985/GetProductsData", {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    products = data;
+
+                    renderProducts(data);
+                    totalPages = Math.ceil(products.length / pageSize);
+                    renderPagination(totalPages);
+
+                })
+                .catch(error => console.log('Error:', error));
+        })
+
+    </script>
+
+
+
+}

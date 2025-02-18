@@ -1,0 +1,601 @@
+﻿
+@model IEnumerable<Project_64132985.Models.Employee>
+@{
+    ViewBag.Title = "Nhân viên";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var grid = new WebGrid(Model, canPage: true, defaultSort: "CreatedAt", rowsPerPage: 10);
+}
+<style>
+    .table-pager {
+        text-align: center;
+    }
+
+        .table-pager > td {
+            padding-top: 50px;
+            font-size: 16px;
+            color: red;
+        }
+
+            .table-pager > td > a {
+                color: black; /* Đặt màu cho tất cả các td */
+            }
+
+
+            .table-pager > td > a {
+                background-color: #f5f5f5;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                padding: 5px 10px;
+                font-size: 16px;
+            }
+
+                .table-pager > td > a:hover {
+                    background-color: #f0f0f0;
+                    font-size: 16px;
+                }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+    }
+
+        .overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+    /* Popup content */
+    .popup {
+        background: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+
+    .overlay-detail-customer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+        padding: 0 20px;
+    }
+
+
+        .overlay-detail-customer.active {
+            visibility: visible;
+            opacity: 1;
+        }
+</style>
+<div>
+    <div class="my-16">
+        <div class="popup-overlay overlay">
+            <div class="popup scale-0 opacity-0 duration-[400ms] w-[350px] overflow-hidden rounded-xl font-medium transition-all">
+                <div class="flex items-center justify-between border-b border-gray-200 bg-gray-200 px-6 py-3">
+                    <span id="titlePopup" class="text-[20px]">Hủy tài khoản?</span>
+                    <ion-icon name="close-outline" class="close size-7 hover:cursor-pointer"></ion-icon>
+                </div>
+                <div class="flex items-center border-b border-gray-200 px-6 py-4 font-normal text-[16px] text-gray-500">
+                    <span class="contentPopup text-start">Lưu ý không thể hoàn tác được</span>
+                </div>
+                <div class="flex items-center justify-end gap-5 px-6 py-4 font-medium text-[15px]">
+                    <button class="border-2 cancel rounded-md border-gray-200 px-6 py-1">
+                        Hủy
+                    </button>
+                    <button class="delete rounded-md bg-red-500 px-6 py-1.5 text-white">
+                        Lưu
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="overlay-detail overlay-detail-customer">
+            <div class="detail-content opacity-0 scale-0 min-w-[450px] translate-x-[100%] rounded-2xl bg-white pb-5 transition-all duration-500">
+                <div class="flex items-center justify-between border-b border-gray-300 px-5 py-3">
+                    <div class="flex flex-col gap-1">
+                        <span id="customerID" class="font-medium text-[20px]"></span>
+                        <span class="text-[14px] text-gray-500">Chi tiết nhân viên</span>
+                    </div>
+                    <button id="close-detail"><ion-icon name="close-outline" class="size-7"></ion-icon></button>
+                </div>
+                <div class="flex flex-col gap-3 border-b border-gray-300 px-5 py-3">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center justify-between text-[16px]">
+                            <span class="text-gray-500">Ảnh nhân viên</span>
+                            <img src="" id="image-emp-detail" class="size-20 object-contain" />
+                        </div>
+                        <div class="flex items-center justify-between text-[16px]">
+                            <span class="text-gray-500">Ngày tạo</span>
+                            <span id="createdAt" class="font-medium"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 border-b border-gray-300 px-5 py-3">
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Họ tên</span>
+                        <span id="customerName" class="font-medium"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Email</span>
+                        <span id="customerEmail" class="font-medium text-[#1262fc]"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Số điện thoại</span>
+                        <span id="customerPhone" class="font-medium"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Địa chỉ</span>
+                        <span id="customerAddr" class="font-medium"></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 px-5 py-3">
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Chức vụ</span>
+                        <span id="employeeRole" class="font-medium"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-[16px]">
+                        <span class="text-gray-500">Trạng thái tài khoản</span>
+                        <span id="employeeActive" class="font-medium"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="rounded-xl bg-white py-5">
+            <div class="flex items-center justify-between px-8">
+                <span class="font-medium text-[18px]">Nhân viên</span>
+                <div class="flex items-center gap-4">
+                    @if (ViewBag.User.Roles == "admin")
+                    {
+
+                        <a href="@Url.Action("Add", "AdminEmployee_64132985")" class="flex items-center gap-1 rounded bg-[#4b68ff] px-4 py-[9px] text-white text-[14px]">
+                            <ion-icon name="add-outline" class="size-4"></ion-icon>
+                            <span>Thêm mới</span>
+                        </a>
+                    }
+                    @using (Html.BeginForm("Index", "AdminEmployee_64132985", FormMethod.Get))
+                    {
+                        <div class="relative">
+                            <button type="submit" class="translate-y-[-50%] absolute left-2 top-[50%] flex items-center justify-center">
+                                <ion-icon name="search-outline" class="size-5"></ion-icon>
+                            </button>
+                            <input list="employee-ids" type="text" name="id" value="@ViewBag.Id" class="w-full rounded-md border border-gray-200 px-2 py-1.5 pl-8 outline-none" placeholder="Tìm kiếm theo ID" autocomplete="off" />
+                            <datalist id="employee-ids">
+                                @if (ViewBag.Ids != null)
+                                {
+                                    foreach (var id in ViewBag.Ids)
+                                    {
+                                        <option value="@id"></option>
+                                    }
+                                }
+                            </datalist>
+                        </div>
+                    }
+                    <!-- Filter Button -->
+                    <div class="relative">
+                        <button class="btn-filter border-2 relative flex items-center gap-2 rounded-lg border-gray-300 px-4 py-2 focus:ring focus:ring-blue-500">
+                            <ion-icon name="filter-outline" class="size-5"></ion-icon>
+                            <span class="text-sm font-normal text-gray-500">Bộ lọc</span>
+                            @if (ViewBag.NumberFilter > 0)
+                            {
+                                <div id="number-filter" class="top-[-10px] absolute -right-2 flex size-5 items-center justify-center rounded-full bg-orange-300 text-[12px] text-white">@ViewBag.NumberFilter</div>
+                            }
+                        </button>
+
+                        <!-- Filter Dropdown -->
+                        <div class="dropdown-filter opacity-0 scale-0 absolute right-0 z-50 mt-2 w-96 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl transition-all duration-500">
+                            <!-- Header -->
+                            <div class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-2">
+                                <span class="font-medium">Bộ lọc</span>
+                                <button class="btn-close-filter text-gray-500 hover:text-red-500">
+                                    <ion-icon name="close-outline" class="size-7"></ion-icon>
+                                </button>
+                            </div>
+                            @using (Html.BeginForm("Index", "AdminEmployee_64132985", FormMethod.Get))
+                            {
+
+
+                                <!-- Filters -->
+                                <div id="all-filter" class="max-h-[450px] space-y-6 overflow-x-hidden overflow-y-scroll p-4 text-[15px]">
+
+
+                                    <!-- Date Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label for="date" class="text-gray-400">Chọn ngày</label>
+                                            <button id="delete-date" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+
+                                        <div>
+                                            <input type="date"
+                                                   id="date"
+                                                   name="createdAt"
+                                                   value="@((ViewBag.Date != null) ? ((DateTime)ViewBag.Date).ToString("yyyy-MM-dd") : "")"
+                                                   class="mt-1 w-full rounded-md border px-2 py-2" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Name Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label for="name" class="text-gray-400">Họ tên</label>
+                                            <button id="delete-name" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+                                        <input type="text"
+                                               id="name"
+                                               class="mt-2 w-full rounded-md border px-2 py-2"
+                                               name="name"
+                                               value="@ViewBag.Name" />
+                                    </div>
+                                    <!-- Email Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label for="email" class="text-gray-400">Email</label>
+                                            <button id="delete-email" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+                                        <input type="text"
+                                               id="email"
+                                               class="mt-2 w-full rounded-md border px-2 py-2"
+                                               name="email"
+                                               value="@ViewBag.Email" />
+                                    </div>
+                                    <!-- Active Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label for="email" class="text-gray-400">Trạng thái</label>
+                                            <button id="delete-active" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+                                        <div class="mt-2 flex items-center gap-3">
+                                            @if (string.IsNullOrEmpty(ViewBag.Active))
+                                            {
+                                                <label for="active">Hoạt động</label>
+                                                <input id="active" type="radio" name="active" value="true" class="size-4" />
+                                                <label for="block">Bị khóa</label>
+                                                <input id="block" type="radio" name="active" value="false" class="size-4" />
+
+                                            }
+                                            else
+                                            {
+                                                if (ViewBag.Active == "true")
+                                                {
+                                                    <label for="active">Hoạt động</label>
+                                                    <input id="active" type="radio" name="active" checked value="true" class="size-4" />
+                                                    <label for="block">Bị khóa</label>
+                                                    <input id="block" type="radio" name="active" value="false" class="size-4" />
+                                                }
+                                                else
+                                                {
+                                                    <label for="active">Hoạt động</label>
+                                                    <input id="active" type="radio" name="active" value="true" class="size-4" />
+                                                    <label for="block">Bị khóa</label>
+                                                    <input id="block" type="radio" name="active" value="false" checked class="size-4" />
+                                                }
+                                            }
+
+                                        </div>
+                                    </div>
+                                    <!-- Phone Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label for="phone" class="text-gray-400">Số điện thoại</label>
+                                            <button id="delete-phone" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+                                        <input type="text"
+                                               id="phone"
+                                               class="mt-2 w-full rounded-md border px-2 py-2"
+                                               name="phone"
+                                               value="@ViewBag.Phone" />
+                                    </div>
+                                    <!-- Address Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label for="addr" class="text-gray-400">Địa chỉ</label>
+                                            <button id="delete-addr" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+                                        <input type="text"
+                                               id="addr"
+                                               class="mt-2 w-full rounded-md border px-2 py-2"
+                                               name="addr"
+                                               value="@ViewBag.Addr" />
+                                    </div>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4">
+                                    <button id="reset-filter" class="rounded-md bg-gray-100 px-4 py-2 text-sm text-gray-500 hover:bg-gray-200">
+                                        Xóa bộ lọc
+                                    </button>
+                                    <button type="submit" id="apply-filter" class="rounded-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600">
+                                        Áp dụng
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="mt-10 px-10">
+
+                @grid.GetHtml(
+       tableStyle: "min-w-full bg-white",
+       headerStyle: "text-left py-6 font-normal text-gray-500",
+       rowStyle: "border-b border-gray-200 py-6 text-gray-700",
+       alternatingRowStyle: "border-b border-gray-200 py-6 text-gray-700",
+       footerStyle: "table-pager",
+       columns: grid.Columns(
+           grid.Column("EmployeeID", "Mã nhân viên", style: "py-6"),
+grid.Column("EmployeeName", "Họ tên", style: "py-6"),
+grid.Column("Email", "Email", style: "py-6"),
+grid.Column("PhoneNumber", "Số điện thoại",
+format: @<text>@(item.PhoneNumber != null ? item.PhoneNumber : "Trống")</text>,
+style: "py-6"),
+grid.Column("Active", "Trạng thái",
+format: @<text>@(item.Active == true ? "Hoạt động" : "Bị Khóa")</text>,
+style: "py-6 status"),
+grid.Column("Chức năng", format: @<text>
+    <div class="flex items-center gap-3">
+        @if (item.Active)
+        {
+            <button class="btn-delete" data-id="@item.EmployeeID" data-status="block">
+                <ion-icon name="create-outline" class="size-6 text-blue-500"></ion-icon>
+            </button>
+        }
+        else
+        {
+            <button class="btn-delete" data-id="@item.EmployeeID" data-status="active">
+                <ion-icon name="create-outline" class="size-6 text-blue-500"></ion-icon>
+            </button>
+        }
+        <button class="btn-detail" data-customer='{
+                    "EmployeeID": "@item.EmployeeID",
+                    "EmployeeName": "@item.EmployeeName",
+                    "Email": "@item.Email",
+                    "Img": "@item.Img",
+                    "Roles": "@item.Roles",
+                    "Active": "@item.Active",
+                    "PhoneNumber": "@(item.PhoneNumber != null ? item.PhoneNumber : "Trống")",
+                    "Address": "@(item.Addr != null ? item.Addr : "Trống")",
+                    "CreatedAt": "@item.CreatedAt.ToString("dd-MM-yyyy")"
+                }'>
+            <ion-icon name="list-outline" class="size-6"></ion-icon>
+        </button>
+
+    </div>
+</text>)
+)
+)
+                <div class="mt-10 flex items-center justify-center font-normal text-gray-500 text-[17px]">
+                    @ViewBag.Result
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Customer{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+
+            const btnDelete = document.querySelectorAll(".btn-delete");
+            const nav = document.querySelector("#employee-nav");
+            const overlay = document.querySelector(".popup-overlay");
+            const popup = document.querySelector(".popup");
+            const turnOffPopup = document.querySelector(".close");
+            const btnCancelDelete = document.querySelector(".cancel");
+            const btnConfirmDelete = document.querySelector(".delete");
+
+            // Detail
+            const btnDetail = document.querySelectorAll(".btn-detail");
+            const btnCloseDetail = document.querySelector("#close-detail");
+            const overlayDetail = document.querySelector(".overlay-detail-customer");
+            const detailContent = document.querySelector(".detail-content");
+            const employeeImage = document.querySelector("#image-emp-detail");
+            const customerID = document.querySelector("#customerID");
+            const customerName = document.querySelector("#customerName");
+            const customerEmail = document.querySelector("#customerEmail");
+            const customerAddr = document.querySelector("#customerAddr");
+            const customerPhone = document.querySelector("#customerPhone");
+            const createdAt = document.querySelector("#createdAt");
+            const employeeActive = document.querySelector("#employeeActive");
+            const employeeRole = document.querySelector("#employeeRole");
+
+            const popupTitle = document.querySelector("#titlePopup");
+            const popupContent = document.querySelector(".contentPopup");
+            const statusColumn = document.querySelectorAll(".status");
+
+            // Filter
+            const btnFilter = document.querySelector(".btn-filter");
+            const numberFilter = document.querySelector(".number-filter");
+            const dropdownFilter = document.querySelector(".dropdown-filter")
+            const btnCloseFilter = document.querySelector(".btn-close-filter");
+            const btnResetFilter = document.querySelector("#reset-filter");
+            const nameFilter = document.querySelector("#name");
+            const emailFilter = document.querySelector("#email");
+            const phoneFilter = document.querySelector("#phone");
+            const addrFilter = document.querySelector("#addr");
+            const dateFilter = document.querySelector("#date")
+            const activeFilter = document.getElementsByName("active");
+            const btnDeleteDate = document.querySelector("#delete-date");
+            const btnDeleteName = document.querySelector("#delete-name");
+            const btnDeleteEmail = document.querySelector("#delete-email");
+            const btnDeletePhone = document.querySelector("#delete-phone");
+            const btnDeleteActive = document.querySelector("#delete-active");
+            const btnDeleteAddr = document.querySelector("#delete-addr");
+
+            btnFilter.addEventListener("click", () => {
+                dropdownFilter.classList.add("opacity-100", "scale-100")
+            })
+
+            btnCloseFilter.addEventListener("click", () => {
+                dropdownFilter.classList.remove("opacity-100", "scale-100")
+            })
+
+            btnDeleteDate.addEventListener("click", () => {
+                dateFilter.value = ""
+            })
+
+            btnDeleteName.addEventListener("click", () => {
+                nameFilter.value = ""
+            })
+            btnDeleteEmail.addEventListener("click", () => {
+                emailFilter.value = ""
+            })
+
+            btnDeleteActive.addEventListener("click", () => {
+                activeFilter.forEach((radio) => {
+                    radio.checked = false;
+                });
+            })
+            btnDeleteAddr.addEventListener("click", () => {
+                addrFilter.value = ""
+            })
+            btnDeletePhone.addEventListener("click", () => {
+                phoneFilter.value = ""
+            })
+
+            btnResetFilter.addEventListener("click", () => {
+                nameFilter.value = "";
+                emailFilter.value = "";
+                dateFilter.value = "";
+                phoneFilter.value = "";
+                addrFilter.value = "";
+                activeFilter.forEach((radio) => {
+                    radio.checked = false;
+                });
+            })
+            statusColumn.forEach((s) => {
+                if (s.textContent === "Hoạt động") {
+                    s.classList.add("text-green-500");
+                } else {
+                    s.classList.add("text-red-500");
+                }
+            })
+            let employeeIdDelete = "";
+            let status = "";
+            btnDetail.forEach((btn) => {
+
+                btn.addEventListener("click", () => {
+                    const data = btn.getAttribute("data-customer")
+                    const result = JSON.parse(data);
+                    overlayDetail.classList.add("active");
+                    detailContent.classList.remove("translate-x-[100%]");
+                    detailContent.classList.add("opacity-100", "scale-100");
+
+
+                    customerID.textContent = result.EmployeeID;
+                    customerName.textContent = result.EmployeeName;
+                    customerAddr.textContent = result.Address;
+                    customerPhone.textContent = result.PhoneNumber;
+                    customerEmail.textContent = result.Email;
+                    createdAt.textContent = result.CreatedAt;
+                    employeeImage.src = `/Images/Employees/${result.Img}`;
+                    employeeActive.textContent = result.Active === "True" ? "Hoạt động" : "Khóa";
+                    employeeRole.textContent = result.Roles === "admin" ? "Admin" : "Nhân viên"
+                })
+            })
+
+            btnCloseDetail.addEventListener("click", () => {
+                overlayDetail.classList.remove("active");
+                detailContent.classList.add("translate-x-[100%]");
+                detailContent.classList.remove("opacity-100", "scale-100");
+            })
+            // Nav
+            nav.classList.add("bg-[#4b68ff]", "text-white");
+
+            // Xử lí khi bấm action hủy 1 tài khoản nhân viên
+            btnDelete.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    employeeIdDelete = btn.getAttribute("data-id");
+                    status = btn.getAttribute("data-status");
+                    if (status === "active") {
+                        popupTitle.textContent = "Mở lại tài khoản?";
+                        popupContent.textContent = "Cho phép tài khoản có thể đăng nhập sử dụng lại hệ thống"
+                        btnConfirmDelete.classList.add("bg-blue-500");
+                        btnConfirmDelete.classList.remove("bg-red-500");
+                    } else {
+                        popupTitle.textContent = "Hủy tài khoản?"
+                        popupContent.textContent = "Không cho phép tài khoản đăng nhập sử dụng hệ thống"
+                        btnConfirmDelete.classList.remove("bg-blue-500");
+                        btnConfirmDelete.classList.add("bg-red-500");
+                    }
+                    overlay.classList.add("active");
+                    popup.classList.add("opacity-100", "scale-100")
+
+                })
+            })
+            // Xử lý khi bấm xác nhận hủy tài khoản của khách hàng
+            btnConfirmDelete.addEventListener("click", () => {
+                fetch("/Admin/Employee/Delete", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: employeeIdDelete,
+                        status: status
+                    })
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+
+                        if (data.success) {
+                            window.location.reload();
+
+                        } else {
+                            console.log(data.message);
+                        }
+                    })
+                    .catch((error) => {
+                        // Bắt lỗi nếu có (network lỗi, lỗi parsing JSON, v.v.)
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            });
+
+
+
+
+            // Xử lí khi bấm icon X tắt popup
+            turnOffPopup.addEventListener("click", () => {
+                overlay.classList.remove("active");
+                popup.classList.remove("opacity-100", "scale-100")
+            })
+            // Xử lí khi bấm cancel tắt popup
+            btnCancelDelete.addEventListener("click", () => {
+                overlay.classList.remove("active");
+                popup.classList.remove("opacity-100", "scale-100")
+            })
+            // Xử lí bấm ngoài phần popup thì tắt popup
+            overlay.addEventListener("click", (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove("active")
+                    popup.classList.remove("opacity-100", "scale-100")
+                }
+            })
+
+        })
+
+
+    </script>
+
+
+
+}

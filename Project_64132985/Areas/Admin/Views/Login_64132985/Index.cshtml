@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var emailRegex = @"/\S+@\S+\.\S+/";
+}
+
+<div class="flex min-h-screen min-w-full items-center justify-center bg-gray-100">
+    <div class="flex flex-col items-center rounded-md border border-gray-300 bg-white p-8" style="width: 385px;">
+        <span class="font-semibold text-[20px]">Admin</span>
+        <div class="mt-14 flex w-full flex-col gap-5">
+            <div class="flex flex-col gap-1 font-medium text-[14px] text-[#474B57]">
+                <label for="email">Email</label>
+                <input id="email" type="email" class="w-full rounded border border-gray-300 px-2 py-2" />
+                <span class="error-email font-normal text-red-500 text-[13px]"></span>
+            </div>
+            <div class="flex flex-col gap-1 font-medium text-[14px] text-[#474B57]">
+                <label for="password">Mật khẩu</label>
+                <input id="password" type="password" class="w-full rounded border border-gray-300 px-2 py-2" />
+                <span class="error-password font-normal text-red-500 text-[13px]"></span>
+            </div>
+            <button class="login mt-4 w-full rounded bg-black py-3 text-white text-[14px]">Đăng nhập</button>
+        </div>
+    </div>
+</div>
+@section Login{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const emailInput = document.querySelector("#email");
+            const passwordInput = document.querySelector("#password");
+            const errorEmail = document.querySelector(".error-email");
+            const errorPassword = document.querySelector(".error-password");
+            const btnLogin = document.querySelector(".login");
+            const emailRegex = new RegExp(@emailRegex);
+
+            emailInput.addEventListener("input", () => {
+                emailInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                errorEmail.textContent = ""
+            })
+
+            passwordInput.addEventListener("input", () => {
+                passwordInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                errorPassword.textContent = ""
+            })
+
+            btnLogin.addEventListener("click", () => {
+                let flag = false;
+                if (emailInput.value === "") {
+                    errorEmail.textContent = "Email không được để trống";
+                    emailInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true
+                } else if (!emailRegex.test(emailInput.value)) {
+                    errorEmail.textContent = "Email không hợp lệ";
+                    flag = true;
+                    emailInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorEmail.textContent = "";
+                    emailInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (passwordInput.value === "") {
+                    flag = true;
+                    errorPassword.textContent = "Mật khẩu không được trống";
+                    passwordInput.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                else {
+                    errorPassword.textContent = "";
+                    passwordInput.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (flag === false) {
+                    btnLogin.disabled = true;
+                    btnLogin.classList.add("opacity-60");
+                    btnLogin.textContent = "Đang xử lý";
+                    fetch("/Login_64132985/Login", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: emailInput.value,
+                            password: passwordInput.value,
+                        })
+                    }).then((response) => response.json())
+                        .then((data) => {
+                            if (!data.success) {
+                                Toastify({
+                                    text: data.message,
+                                    className: "info",
+                                    position: "center",
+                                    duration: 2000,
+                                    avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                    //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        fontSize: "14px",
+
+                                    },
+
+                                }).showToast();
+                                btnLogin.disabled = false
+                                btnLogin.classList.remove("opacity-60");
+                                btnLogin.textContent = "Đăng nhập";
+                            } else {
+                                Toastify({
+                                    text: data.message,
+                                    className: "info",
+                                    position: "center",
+                                    duration: 2000,
+                                    //avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                    avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        fontSize: "14px",
+
+                                    },
+                                   
+                                }).showToast();
+                                btnLogin.disabled = false
+                                btnLogin.classList.remove("opacity-60");
+                                btnLogin.textContent = "Đăng nhập";
+                            }
+                        })
+                }
+            })
+        })
+
+    </script>    
+    
+    
+    
+    
+}

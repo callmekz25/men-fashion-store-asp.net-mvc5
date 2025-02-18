@@ -1,0 +1,135 @@
+﻿@model Project_64132985.Models.Voucher
+@{
+    ViewBag.Title = "Sửa phiếu giảm giá";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="mt-16 pb-20">
+    <div class="popup-overlay overlay">
+        <div class="popup scale-0 opacity-0 transition-all duration-300">
+
+        </div>
+    </div>
+    <span class="font-medium text-[25px]">Sửa phiếu giảm giá</span>
+    <div class="grid-cols-3 mt-10 grid gap-10">
+        <div class="col-span-2 h-fit">
+            <div class="rounded-xl bg-white p-5">
+                <span class="font-medium text-[18px]">Thông tin cơ bản</span>
+                <div class="grid-cols-2 mt-8 grid gap-6">
+                    <div class="col-span-2 flex flex-col gap-1">
+                        <label for="voucher" class="text-gray-400 text-[15px]">Mã giảm giá</label>
+                        <input type="text" readonly value="@Model.VoucherID" id="voucher" class="border-2 rounded-lg border-gray-200 px-2 py-2 text-[16px]" />
+                        <span id="error-voucher" class="text-red-500 text-[13px]"></span>
+                    </div>
+                    <div class="col-span-2 flex flex-col gap-1">
+                        <label for="descr" class="text-gray-400 text-[15px]">Chú thích</label>
+                        <textarea id="descr" value="@Model.Descr" class="border-2 min-h-[200px] resize-none rounded-lg border-gray-200 px-2 py-2 text-[16px]">@Model.Descr</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-1 flex h-fit flex-col gap-10 rounded-xl bg-white p-5">
+            <span class="font-medium text-[18px]">Giảm giá và ngày hết hạn</span>
+            <div class="flex flex-col gap-1">
+                <label for="discount" class="text-gray-400 text-[15px]">Phần trăm giảm giá</label>
+                <input type="number" value="@Model.Discount" id="discount" class="border-2 rounded-lg border-gray-200 px-2 py-2 text-[16px]" />
+                <span id="error-discount" class="text-red-500 text-[13px]"></span>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label for="expired" class="text-gray-400 text-[15px]">Ngày hết hạn</label>
+                <input type="date" id="expired" value="@Model.Expired.ToString("yyyy-MM-dd")" class="border-2 rounded-lg border-gray-200 px-2 py-2 text-[16px]" />
+                <span id="error-expired" class="text-red-500 text-[13px]"></span>
+            </div>
+
+        </div>
+        <div class="col-span-2 flex items-center justify-end gap-4">
+            <a href="@Url.Action("Index")" class="rounded-md border border-gray-300 bg-gray-300 px-4 py-2">Quay về</a>
+            <button id="add" class="rounded-md bg-[#4b68ff] px-4 py-2 text-white">Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+
+
+@section EditVoucher{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const nav = document.querySelector("#voucher-nav");
+            nav.classList.add("bg-[#4b68ff]", "text-white");
+            const voucherEl = document.querySelector("#voucher");
+            const descrEl = document.querySelector("#descr");
+            const discountEl = document.querySelector("#discount");
+            const expiredEl = document.querySelector("#expired");
+            const errorVoucher = document.querySelector("#error-voucher");
+            const errorDiscount = document.querySelector("#error-discount");
+            const errorExpired = document.querySelector("#error-expired");
+
+            const btnAdd = document.querySelector("#add");
+
+            btnAdd.addEventListener("click", () => {
+                const currentDate = new Date();
+                currentDate.setHours(0, 0, 0, 0);
+                let valueExpired = "";
+                let flag = false;
+                if (voucherEl.value === "") {
+                    errorVoucher.textContent = "Mã giảm giá không được trống";
+                    voucherEl.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true;
+                } else {
+                    errorVoucher.textContent = "";
+                    voucherEl.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (discountEl.value <= 0 || discountEl.value === "") {
+                    errorDiscount.textContent = "Phần trăm giảm giá không được trống và phải lớn hơn 0";
+                    discountEl.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true
+                } else {
+                    errorDiscount.textContent = "";
+                    discountEl.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (expiredEl.value === "") {
+                    errorExpired.textContent = "Ngày hết hạn không được trống";
+                    expiredEl.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true
+                } else {
+                    valueExpired = new Date(expiredEl.value);
+                    if (valueExpired < currentDate) {
+                        errorExpired.textContent = "Ngày hết hạn phải lớn ngày hiện tại";
+                        expiredEl.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                        flag = true
+                    } else {
+                        errorExpired.textContent = "";
+                        expiredEl.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    }
+                }
+                if (!flag) {
+                    fetch("/Admin/Voucher/Edit", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: voucherEl.value,
+                            descr: descrEl.value,
+                            discount: discountEl.value,
+                            expired: expiredEl.value,
+                        })
+                    }).then((res) => res.json())
+                        .then((data) => {
+                            if (data.success) {
+                               
+                                this.location.reload();
+                            } else {
+                                errorVoucher.textContent = data.message;
+                                voucherEl.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                            }
+                        })
+                }
+            })
+        })
+
+
+    </script>
+
+
+
+}
+

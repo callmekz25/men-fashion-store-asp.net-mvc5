@@ -1,0 +1,267 @@
+﻿@{
+    ViewBag.Title = "CoolBoy";
+    var emailRegex = @"/\S+@\S+\.\S+/";
+}
+@model IEnumerable<Project_64132985.Models.Product>
+<style>
+
+    input:focus {
+        box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+    }
+
+    input {
+        transition: 0.3s ease
+    }
+
+
+    .scroll-slides {
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    
+    }
+
+    .shadow-text {
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+    }
+</style>
+<div>
+    @*Phần banner*@
+    <div class="relative overflow-hidden bg-[#f6f6f6]">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50"></div>
+        <img src="~/Images/Products/banner.png" class="h-[650px] w-full object-cover" />
+        <div class="absolute left-10 top-[70%] flex flex-col gap-2 text-white lg:left-24 lg:top-[60%]">
+            <span class="font-semibold text-[30px] lg:text-[32px]" data-aos="fade-right">Nâng tầm thanh lịch</span>
+            <span class="text-[18px] lg:text-[20px]" data-aos="fade-right">Những thiết kế tối giản trong rộng rãi</span>
+
+            <a href="@Url.Action("OurProduct", "Products_64132985")" class="mt-6 flex w-fit items-center gap-2 bg-white px-3 py-2 font-normal text-black text-[16px]" data-aos="fade-up">
+                <span>Xem Ngay</span>
+                <ion-icon name="arrow-forward-outline" class="lg:text-[20px]"></ion-icon>
+            </a>
+        </div>
+    </div>
+    @*Phần our products*@
+    <div class="bg-white py-20 pl-6 md:px-6 lg:px-[100px] lg:py-[90px]">
+        <div class="flex flex-col items-center justify-center gap-2" data-aos="fade-up">
+            <span class="font-normal uppercase text-[#878A92] text-[16px] lg:text-[14px]">Mua sắm ngay</span>
+            <span class="font-semibold text-[20px] lg:text-[18px]">Những sản phẩm của chúng tôi</span>
+        </div>
+        <div class="scroll-slides auto-cols-[85%] mt-[50px] grid snap-x snap-mandatory snap-always grid-flow-col gap-[30px] overflow-x-auto md:gap-y-10 md:gap-x-7 md:overflow-x-hidden md:auto-cols-[100%] md:grid-flow-row md:grid-cols-2 lg:grid-cols-4 lg:mt-[80px]">
+            @if (Model == null)
+            {
+                <span>Null</span>
+            }
+            else
+            {
+                foreach (var p in Model)
+                {
+                    <div class="flex flex-col gap-3" data-aos="fade-up">
+                        <div class="flex items-center justify-center rounded-md bg-[#F6F6F6] p-4">
+                            <a href=@Url.Action("ProductDetail", "Products_64132985", new { id = p.ProductID })>
+                                <img src="~/Images/Products/@p.Img" class="h-[300px] w-[400px] object-contain" />
+                            </a>
+                        </div>
+                        <span class="mt-3 font-medium text-[23px] lg:text-[17px]">@p.ProductName</span>
+                        <div class="flex items-center gap-3">
+                            <span class="text-[#474B57] text-[20px] lg:text-[16px]">
+                                @(p.Price.ToString("#,0").Replace(",", "."))
+                                đ
+                            </span>
+
+                        </div>
+                    </div>
+                }
+            }
+
+
+        </div>
+    </div>
+    @*Banner 2*@
+    <div class="relative my-[100px] overflow-hidden bg-[#F6F6F6]">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50"></div>
+        <img src="~/Images/Products/banner2.png" class="h-[650px] w-full object-cover" />
+        <div class="absolute left-10 top-[70%] flex flex-col gap-2 text-white lg:left-24 lg:top-[60%]">
+            <span class="font-semibold text-[25px] lg:text-[32px]" data-aos="fade-right">Đơn giản mà ấm</span>
+            <span class="text-[18px] lg:text-[20px]" data-aos="fade-right">Những thiết kế mỏng nhẹ nhưng vẫn ấm</span>
+
+            <a href="@Url.Action("OurProduct", "Products_64132985")" class="mt-6 flex w-fit items-center gap-2 bg-white px-3 py-2 font-normal text-black text-[16px]" data-aos="fade-up">
+                <span>Xem Ngay</span>
+                <ion-icon name="arrow-forward-outline" class="lg:text-[20px]"></ion-icon>
+            </a>
+        </div>
+    </div>
+    @*Product 2*@
+    <div class="bg-white pl-6 md:px-6 lg:px-[100px] lg:py-[50px]">
+        <div class="flex flex-col items-center justify-center" data-aos="fade-in">
+            <div class="rounded-full border border-gray-100 px-3 py-1 font-medium text-[16px] lg:text-[14px]">Nổi bật</div>
+        </div>
+        <div class="scroll-slides auto-cols-[85%] mt-[50px] grid snap-x snap-mandatory snap-always grid-flow-col gap-[30px] overflow-x-auto md:gap-y-10 md:gap-x-7 md:overflow-x-hidden md:auto-cols-[100%] md:grid-flow-row md:grid-cols-2 lg:grid-cols-4 lg:mt-[80px]">
+            @if (ViewBag.Products == null)
+            {
+                <span>Null</span>
+            }
+            else
+            {
+                foreach (var p in ViewBag.Products)
+                {
+                    <div class="flex flex-col gap-3" data-aos="fade-in">
+                        <div class="flex items-center justify-center rounded-md bg-[#F6F6F6] p-4">
+                            <a href=@Url.Action("ProductDetail", "Products_64132985", new { id = p.ProductID })>
+                                <img src="~/Images/Products/@p.Img" class="h-[300px] w-[400px] object-contain" />
+                            </a>
+                        </div>
+                        <span class="mt-3 font-medium text-[23px] lg:text-[17px]">@p.ProductName</span>
+                        <div class="flex items-center gap-3">
+                            <span class="text-[#474B57] text-[20px] lg:text-[16px]">
+                                @(p.Price.ToString("#,0").Replace(",", "."))
+                                đ
+                            </span>
+
+                        </div>
+                    </div>
+                }
+            }
+
+
+        </div>
+    </div>
+    @* Phần features *@
+    <div class="bg-white px-6 py-20 md:py-32 lg:py-[120px] lg:px-[100px]">
+        <div class="grid-cols-1 grid gap-10 md:grid md:grid-cols-2 lg:flex lg:items-center lg:gap-32" data-aos="fade-up">
+            <div class="flex flex-col items-center gap-3 py-3 md:col-span-2 lg:items-start">
+                <div class="flex size-14 items-center justify-center rounded-full bg-[#F6F6F6] lg:size-15">
+                    <img src="~/Images/Icons/delivery.png" class="size-7 object-contain lg:size-6" />
+                </div>
+                <span class="font-semibold text-[18px] md:text-[23px] lg:text-[19px]">Giao Hàng Miễn Phí</span>
+                <span class="text-center text-[#5C5F6A] md:max-w-[500px] md:text-[18px] lg:text-[16px] lg:text-start">Hãy nâng cấp phong cách của bạn ngay hôm nay và được giao hàng MIỄN PHÍ cho tất cả các đơn đặt hàng! Đừng bỏ lỡ.</span>
+            </div>
+            <div class="flex flex-col items-center gap-3 py-3 lg:items-start" data-aos="fade-up">
+                <div class="flex size-14 items-center justify-center rounded-full bg-[#F6F6F6] lg:size-15">
+                    <img src="~/Images/Icons/star.png" class="size-7 object-contain lg:size-6" />
+                </div>
+                <span class="font-semibold text-[18px] md:text-[23px] lg:text-[19px]">Đảm bảo sự hài lòng</span>
+                <span class="text-center text-[#5C5F6A] md:text-[18px] lg:text-[16px] lg:text-start">Tự tin mua sắm với Đảm bảo sự hài lòng của chúng tôi. Yêu thích hoặc được hoàn lại tiền.</span>
+            </div>
+            <div class="flex flex-col items-center gap-3 py-3 lg:items-start" data-aos="fade-up">
+                <div class="flex size-14 items-center justify-center rounded-full bg-[#F6F6F6] lg:size-15">
+                    <img src="~/Images/Icons/check.png" class="size-7 object-contain lg:size-6" />
+                </div>
+                <span class="font-semibold text-[18px] md:text-[23px] lg:text-[19px]">
+                    Thanh toán an toàn
+                </span>
+                <span class="text-center text-[#5C5F6A] md:text-[18px] lg:text-[16px] lg:text-start">An ninh của bạn là ưu tiên của chúng tôi. Thanh toán của bạn được an toàn với chúng tôi.</span>
+            </div>
+        </div>
+    </div>
+    @*Banner 3*@
+    <div class="mb-[50px] mt-10 flex flex-col justify-between bg-[#F6F6F6] px-6 py-[50px] lg:mt-[150px] lg:flex-row lg:items-center lg:py-[70px] lg:px-[100px]">
+        <div class="flex flex-col gap-2">
+            <span class="font-semibold text-[25px] md:text-[30px] lg:text-[26px]" data-aos="fade-right">
+                Tham gia ngay với chúng tôi
+            </span>
+            <span class="text-[#474B57] text-[15px] md:text-[20px] lg:text-[16px]" data-aos="fade-right">Chúng tôi muốn gây bất ngờ cho người đăng ký bằng những mã giảm giá.</span>
+        </div>
+        <div class="mt-8 flex w-full flex-col items-center gap-5 lg:gap-3 lg:flex-row lg:w-fit lg:mt-0" data-aos="fade-up">
+            <input id="email" type="text" placeholder="Địa chỉ email của bạn" class="w-full rounded-md border border-gray-300 px-3 py-3 text-[16px] outline-none md:py-5 md:text-[18px] lg:w-[300px] lg:py-3 lg:text-[13px]" />
+            <button id="submit" class="w-full rounded-md bg-black px-6 py-3 font-medium text-white text-[18px] md:py-5 lg:w-fit lg:py-3 lg:text-[13px]">Đăng ký</button>
+        </div>
+    </div>
+</div>
+
+@section Home{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const home = document.querySelector("#home");
+            home.classList.add("text-black", "border-b" ,"border-black");
+
+            const email = document.querySelector("#email");
+            const btnSubmit = document.querySelector("#submit");
+            const emailRegex = new RegExp(@emailRegex);
+
+            btnSubmit.addEventListener("click", () => {
+                btnSubmit.classList.add("opacity-60");
+                btnSubmit.textContent = "Đang xử lý...";
+                btnSubmit.disabled = true;
+                if (email.value === "") {
+                    btnSubmit.classList.remove("opacity-60");
+                    btnSubmit.textContent = "Đăng ký";
+                    btnSubmit.disabled = false;
+                    Toastify({
+                        text: "Vui lòng nhập email của bạn",
+                        className: "info",
+                        position: "center",
+                        duration: 2000,
+                        avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                        //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                        style: {
+                            background: "white",
+                            color: "black",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            fontSize: "14px",
+
+                        },
+                    }).showToast();
+                } else if (!emailRegex.test(email.value)) {
+                    btnSubmit.classList.remove("opacity-60");
+                    btnSubmit.textContent = "Đăng ký";
+                    btnSubmit.disabled = false;
+                    Toastify({
+                        text: "Email không hợp lệ",
+                        className: "info",
+                        position: "center",
+                        duration: 2000,
+                        avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                        //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                        style: {
+                            background: "white",
+                            color: "black",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            fontSize: "14px",
+
+                        },
+                    }).showToast();
+                } else {
+                    fetch('/Home_64132985/SendVoucher', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email.value
+                        })
+                    }).then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                btnSubmit.classList.remove("opacity-60");
+                                btnSubmit.textContent = "Đăng ký";
+                                btnSubmit.disabled = false;
+                                Toastify({
+                                    text: data.message,
+                                    className: "info",
+                                    position: "center",
+                                    duration: 2000,
+                                    avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        fontSize: "14px",
+
+                                    },
+                                }).showToast();
+                            }
+                        })
+                }
+            })
+        })
+    </script>
+
+
+}

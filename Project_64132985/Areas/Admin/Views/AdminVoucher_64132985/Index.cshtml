@@ -1,0 +1,384 @@
+﻿@model IEnumerable<Project_64132985.Models.Voucher>
+@{
+    ViewBag.Title = "Phiếu giảm giá";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var grid = new WebGrid(Model, canPage: true, rowsPerPage: 10);
+}
+
+<style>
+    .table-pager {
+        text-align: center;
+    }
+
+        .table-pager > td {
+            padding-top: 50px;
+            font-size: 16px;
+            color: red;
+        }
+
+            .table-pager > td > a {
+                color: black; /* Đặt màu cho tất cả các td */
+            }
+
+
+            .table-pager > td > a {
+                background-color: #f5f5f5;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                padding: 5px 10px;
+                font-size: 16px;
+            }
+
+                .table-pager > td > a:hover {
+                    background-color: #f0f0f0;
+                    font-size: 16px;
+                }
+
+
+
+    .overlay-delete {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+        padding: 0 20px;
+    }
+
+
+        .overlay-delete.active {
+            visibility: visible;
+            opacity: 1;
+        }
+</style>
+
+<div>
+    <div class="my-16">
+        <div class="overlay-delete">
+            <div class="popup-delete scale-0 opacity-0 duration-[400ms] w-[350px] overflow-hidden rounded-xl bg-white font-medium transition-all">
+                <div class="flex items-center justify-between border-b border-gray-200 bg-gray-200 px-6 py-3">
+                    <span id="titlePopup" class="text-[20px]">Xóa mã giảm giá?</span>
+                    <ion-icon name="close-outline" class="close size-7 hover:cursor-pointer"></ion-icon>
+                </div>
+                <div class="flex items-center border-b border-gray-200 px-6 py-4 font-normal text-[16px] text-gray-500">
+                    <span class="contentPopup text-start">Lưu ý hành động không thể hoàn tác</span>
+                </div>
+                <div class="flex items-center justify-end gap-5 px-6 py-4 font-medium text-[15px]">
+                    <button class="border-2 cancel rounded-md border-gray-200 px-6 py-1">
+                        Hủy
+                    </button>
+                    <button class="delete rounded-md bg-red-500 px-6 py-1.5 text-white">
+                        Lưu
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="rounded-xl bg-white py-5">
+            <div class="flex items-center justify-between px-8">
+                <span class="font-medium text-[18px]">Khách hàng</span>
+                <div class="flex items-center gap-4">
+
+                    <a href="@Url.Action("AddVoucher", "AdminVoucher_64132985")" class="flex items-center gap-1 rounded bg-[#4b68ff] px-4 py-[9px] text-white text-[14px]">
+                        <ion-icon name="add-outline" class="size-4"></ion-icon>
+                        <span>Thêm mới</span>
+                    </a>
+                    @using (Html.BeginForm("Index", "AdminVoucher_64132985", FormMethod.Get))
+                    {
+                        <div class="relative">
+                            <button type="submit" class="translate-y-[-50%] absolute left-2 top-[50%] flex items-center justify-center">
+                                <ion-icon name="search-outline" class="size-5"></ion-icon>
+                            </button>
+                            <input list="voucher-ids" autocomplete="off" type="text" name="id" value="@ViewBag.Id" class="w-full rounded-md border border-gray-200 px-2 py-1.5 pl-8 outline-none" placeholder="Tìm kiếm theo ID" />
+                            <datalist id="voucher-ids">
+                                @if (ViewBag.Ids != null)
+                                {
+                                    foreach (var id in ViewBag.Ids)
+                                    {
+                                        <option value="@id"></option>
+                                    }
+                                }
+                            </datalist>
+                        </div>
+                    }
+                    <!-- Filter Button -->
+                    <div class="relative">
+                        <button class="btn-filter border-2 relative flex items-center gap-2 rounded-lg border-gray-300 px-4 py-2 focus:ring focus:ring-blue-500">
+                            <ion-icon name="filter-outline" class="size-5"></ion-icon>
+                            <span class="text-sm font-normal text-gray-500">Bộ lọc</span>
+                            @if (ViewBag.NumberFilter > 0)
+                            {
+                                <div id="number-filter" class="top-[-10px] absolute -right-2 flex size-5 items-center justify-center rounded-full bg-orange-300 text-[12px] text-white">@ViewBag.NumberFilter</div>
+                            }
+                        </button>
+
+                        <!-- Filter Dropdown -->
+                        <div class="dropdown-filter opacity-0 scale-0 absolute right-0 z-50 mt-2 w-96 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl transition-all duration-500">
+                            <!-- Header -->
+                            <div class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-2">
+                                <span class="font-medium">Bộ lọc</span>
+                                <button class="btn-close-filter text-gray-500 hover:text-red-500">
+                                    <ion-icon name="close-outline" class="size-7"></ion-icon>
+                                </button>
+                            </div>
+                            @using (Html.BeginForm("Index", "AdminVoucher_64132985", FormMethod.Get))
+                            {
+
+
+                                <!-- Filters -->
+                                <div id="all-filter" class="space-y-6 overflow-x-hidden p-4 text-[15px]">
+
+
+                                    <!-- Date Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label class="text-gray-400">Chọn ngày</label>
+                                            <button id="delete-date" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+                                        <div class="grid-cols-2 mt-2 grid gap-4">
+                                            <div>
+                                                <label for="from-date" class="text-sm">Từ:</label>
+                                                <input type="date"
+                                                       id="from-date"
+                                                       name="fromDate"
+                                                       value="@((ViewBag.From != null) ? ((DateTime)ViewBag.From).ToString("yyyy-MM-dd") : "")"
+                                                       class="mt-1 w-full rounded-md border px-2 py-2" />
+                                            </div>
+                                            <div>
+                                                <label for="to-date" class="text-sm">Đến:</label>
+                                                <input type="date"
+                                                       id="to-date"
+                                                       name="toDate"
+                                                       value="@((ViewBag.To != null) ? ((DateTime)ViewBag.To).ToString("yyyy-MM-dd") : "")"
+                                                       class="mt-1 w-full rounded-md border px-2 py-2" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Discount Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label for="discount" class="text-gray-400">Giảm giá</label>
+                                            <button id="delete-discount" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+                                        <input type="number"
+                                               id="discount"
+                                               class="mt-2 w-full rounded-md border px-2 py-2"
+                                               name="discount"
+                                               value="@ViewBag.Discount" />
+                                    </div>
+
+                                    <!-- Expired Filter -->
+                                    <div>
+                                        <div class="flex items-center justify-between">
+                                            <label  class="text-gray-400">Trạng thái</label>
+                                            <button id="delete-active" class="text-sm font-medium text-blue-500">Xóa</button>
+                                        </div>
+                                        <div class="mt-2 flex items-center gap-3">
+                                            @if (string.IsNullOrEmpty(ViewBag.Active))
+                                            {
+                                                <label for="active">Còn hạn</label>
+                                                <input id="active" type="radio" name="active" value="true" class="size-4" />
+                                                <label for="block">Hết hạn</label>
+                                                <input id="block" type="radio" name="active" value="false" class="size-4" />
+
+                                            }
+                                            else
+                                            {
+                                                if (ViewBag.Active == "true")
+                                                {
+                                                    <label for="active">Còn hạn</label>
+                                                    <input id="active" type="radio" name="active" value="true" checked class="size-4" />
+                                                    <label for="block">Hết hạn</label>
+                                                    <input id="block" type="radio" name="active" value="false" class="size-4" />
+                                                }
+                                                else
+                                                {
+                                                    <label for="active">Còn hạn</label>
+                                                    <input id="active" type="radio" name="active" value="true" class="size-4" />
+                                                    <label for="block">Hết hạn</label>
+                                                    <input id="block" type="radio" name="active" value="false" class="size-4" checked />
+                                                }
+                                            }
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4">
+                                    <button id="reset-filter" class="rounded-md bg-gray-100 px-4 py-2 text-sm text-gray-500 hover:bg-gray-200">
+                                        Xóa bộ lọc
+                                    </button>
+                                    <button type="submit" id="apply-filter" class="rounded-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600">
+                                        Áp dụng
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 px-10">
+
+                @grid.GetHtml(
+       tableStyle: "min-w-full bg-white",
+       headerStyle: "text-left py-6 font-normal text-gray-500",
+       rowStyle: "border-b border-gray-200 py-6 text-gray-700",
+       alternatingRowStyle: "border-b border-gray-200 py-6 text-gray-700",
+       footerStyle: "table-pager",
+       columns: grid.Columns(
+           grid.Column("VoucherID", "Mã giảm giá", style: "py-6"),
+grid.Column("Descr", "Chú thích", style: "py-6  truncation max-w-[150px] whitespace-nowrap text-ellipsis  overflow-hidden"),
+grid.Column("Discount", "Phần trăm giảm giá", style: "py-6"),
+grid.Column("CreatedAt", "Ngày tạo", format: @<text>@item.CreatedAt.ToString("dd-MM-yyyy")</text>, style: "py-6"),
+grid.Column("Expired", "Ngày hết hạn", format: @<text>@item.Expired.ToString("dd-MM-yyyy")</text>, style: "py-6"),
+grid.Column("Chức năng", format: @<text>
+    <div class="flex items-center gap-3">
+        <a href="@Url.Action("Edit", "AdminVoucher_64132985", new {id = item.VoucherID})" class="btn-delete" data-id="@item.VoucherID">
+
+            <ion-icon name="create-outline" class="size-6 text-blue-500"></ion-icon>
+        </a>
+        <button class="delete-voucher" data-id="@item.VoucherID">
+            <ion-icon name="trash-outline" class="size-6 text-red-500"></ion-icon>
+        </button>
+    </div>
+</text>)
+)
+)
+                <div class="mt-10 flex items-center justify-center font-normal text-gray-500 text-[17px]">
+                    @ViewBag.Result
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section HandleVoucher{
+    <script>
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const nav = document.querySelector("#voucher-nav");
+            nav.classList.add("bg-[#4b68ff]", "text-white");
+            const overlayDelete = document.querySelector(".overlay-delete");
+            const popupDelete = document.querySelector(".popup-delete");
+            const btnDeleteVoucher = document.querySelectorAll(".delete-voucher");
+            const btnClose = document.querySelector(".close");
+            const btnSave = document.querySelector(".delete");
+            const btnCancel = document.querySelector(".cancel")
+            // Filter
+            const btnFilter = document.querySelector(".btn-filter");
+            const numberFilter = document.querySelector(".number-filter");
+            const dropdownFilter = document.querySelector(".dropdown-filter")
+            const btnCloseFilter = document.querySelector(".btn-close-filter");
+            const btnResetFilter = document.querySelector("#reset-filter");
+            const btnDeleteDate = document.querySelector("#delete-date");
+            const btnDeleteDiscount = document.querySelector("#delete-discount");
+            const btnDeleteActive = document.querySelector("#delete-active")
+            const activeFilter = document.getElementsByName("active");
+            const fromDateFilter = document.querySelector("#from-date");
+            const toDateFilter = document.querySelector("#to-date");
+            const discountFilter = document.querySelector("#discount");
+            btnFilter.addEventListener("click", () => {
+                dropdownFilter.classList.add("opacity-100", "scale-100")
+            })
+
+            btnCloseFilter.addEventListener("click", () => {
+                dropdownFilter.classList.remove("opacity-100", "scale-100")
+            })
+
+            btnDeleteDate.addEventListener("click", () => {
+                fromDateFilter.value = ""
+                toDateFilter.value = ""
+            })
+            btnDeleteDiscount.addEventListener("click", () => {
+                discountFilter.value = 0;
+            })
+
+            btnDeleteActive.addEventListener("click", () => {
+                activeFilter.forEach((a) => {
+                    a.checked = false;
+                })
+            })
+            btnResetFilter.addEventListener("click", () => {
+                fromDateFilter.value = ""
+                toDateFilter.value = ""
+                discountFilter.value = 0;
+                activeFilter.forEach((a) => {
+                    a.checked = false;
+                })
+            })
+
+            let voucherId = ""
+            btnDeleteVoucher.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const id = btn.getAttribute("data-id");
+                    voucherId = id;
+                    overlayDelete.classList.add("active");
+                    popupDelete.classList.add("scale-100", "opacity-100");
+
+                })
+            })
+
+            btnClose.addEventListener("click", () => {
+                overlayDelete.classList.remove("active");
+                popupDelete.classList.remove("scale-100", "opacity-100");
+            })
+            btnCancel.addEventListener("click", () => {
+                overlayDelete.classList.remove("active");
+                popupDelete.classList.remove("scale-100", "opacity-100");
+            })
+
+            btnSave.addEventListener("click", () => {
+                fetch("/Admin/Voucher/Delete", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: voucherId,
+                    })
+                }).then((res) => res.json())
+                    .then((data) => {
+                        if (data.success) {
+                            this.location.reload();
+                        } else {
+                            Toastify({
+                                text: data.message,
+                                className: "info",
+                                position: "center",
+                                duration: 2000,
+                                avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                style: {
+                                    background: "white",
+                                    color: "black",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    fontSize: "16px",
+
+                                }
+                            }).showToast();
+                        }
+                    })
+            })
+
+
+
+
+
+        })
+    </script>
+
+
+}

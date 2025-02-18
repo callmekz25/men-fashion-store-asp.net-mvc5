@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="QL_THOITRANG_FINALModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Cart">
+    <Key>
+      <PropertyRef Name="CartID" />
+    </Key>
+    <Property Name="CartID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="CustomerID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="Customer" Relationship="Self.FK__Cart__CustomerID__2A4B4B5E" FromRole="Cart" ToRole="Customer" />
+    <NavigationProperty Name="CartDetails" Relationship="Self.FK__CartDetai__CartI__2D27B809" FromRole="Cart" ToRole="CartDetail" />
+  </EntityType>
+  <EntityType Name="CartDetail">
+    <Key>
+      <PropertyRef Name="CartDetailID" />
+    </Key>
+    <Property Name="CartDetailID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="Quantity" Type="Int32" Nullable="false" />
+    <Property Name="Size" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Color" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="CartID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="Cart" Relationship="Self.FK__CartDetai__CartI__2D27B809" FromRole="CartDetail" ToRole="Cart" />
+    <NavigationProperty Name="Product" Relationship="Self.FK__CartDetai__Produ__2E1BDC42" FromRole="CartDetail" ToRole="Product" />
+  </EntityType>
+  <EntityType Name="Customer">
+    <Key>
+      <PropertyRef Name="CustomerID" />
+    </Key>
+    <Property Name="CustomerID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="CustomerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="Addr" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Pass" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="Carts" Relationship="Self.FK__Cart__CustomerID__2A4B4B5E" FromRole="Customer" ToRole="Cart" />
+    <NavigationProperty Name="OrderCustomers" Relationship="Self.FK__OrderCust__Custo__30F848ED" FromRole="Customer" ToRole="OrderCustomer" />
+    <Property Name="Active" Type="Boolean" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Employee">
+    <Key>
+      <PropertyRef Name="EmployeeID" />
+    </Key>
+    <Property Name="EmployeeID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="EmployeeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="Addr" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="Pass" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Roles" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Img" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="OrderCustomers" Relationship="Self.FK__OrderCust__Emplo__31EC6D26" FromRole="Employee" ToRole="OrderCustomer" />
+    <Property Name="Active" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+  </EntityType>
+  <EntityType Name="OrderCustomer">
+    <Key>
+      <PropertyRef Name="OrderID" />
+    </Key>
+    <Property Name="OrderID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="CustomerID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="EmployeeID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="VoucherID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Customer" Relationship="Self.FK__OrderCust__Custo__30F848ED" FromRole="OrderCustomer" ToRole="Customer" />
+    <NavigationProperty Name="Employee" Relationship="Self.FK__OrderCust__Emplo__31EC6D26" FromRole="OrderCustomer" ToRole="Employee" />
+    <NavigationProperty Name="OrderCustomerDetails" Relationship="Self.FK__OrderCust__Order__37A5467C" FromRole="OrderCustomer" ToRole="OrderCustomerDetail" />
+    <NavigationProperty Name="Voucher" Relationship="Self.FK_OrderCustomer_VoucherID" FromRole="OrderCustomer" ToRole="Voucher" />
+    <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Addr" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+  </EntityType>
+  <EntityType Name="OrderCustomerDetail">
+    <Key>
+      <PropertyRef Name="OrderDetailID" />
+    </Key>
+    <Property Name="OrderDetailID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Quantity" Type="Int32" Nullable="false" />
+    <Property Name="ProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="OrderID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Color" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Size" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="OrderCustomer" Relationship="Self.FK__OrderCust__Order__37A5467C" FromRole="OrderCustomerDetail" ToRole="OrderCustomer" />
+    <NavigationProperty Name="Product" Relationship="Self.FK__OrderCust__Produ__36B12243" FromRole="OrderCustomerDetail" ToRole="Product" />
+  </EntityType>
+  <EntityType Name="Product">
+    <Key>
+      <PropertyRef Name="ProductID" />
+    </Key>
+    <Property Name="ProductID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ProductName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Descr" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Price" Type="Int32" Nullable="false" />
+    <Property Name="Category" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Img" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="Colors" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Sizes" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="UpdatedAt" Type="DateTime" Precision="0" />
+    <NavigationProperty Name="CartDetails" Relationship="Self.FK__CartDetai__Produ__2E1BDC42" FromRole="Product" ToRole="CartDetail" />
+    <NavigationProperty Name="OrderCustomerDetails" Relationship="Self.FK__OrderCust__Produ__36B12243" FromRole="Product" ToRole="OrderCustomerDetail" />
+  </EntityType>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="Voucher">
+    <Key>
+      <PropertyRef Name="VoucherID" />
+    </Key>
+    <Property Name="VoucherID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Discount" Type="Int32" Nullable="false" />
+    <Property Name="Descr" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="0" />
+    <NavigationProperty Name="OrderCustomers" Relationship="Self.FK_OrderCustomer_VoucherID" FromRole="Voucher" ToRole="OrderCustomer" />
+    <Property Name="Expired" Type="DateTime" Nullable="false" Precision="0" />
+  </EntityType>
+  <Association Name="FK__Cart__CustomerID__2A4B4B5E">
+    <End Role="Customer" Type="Self.Customer" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Cart" Type="Self.Cart" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Customer">
+        <PropertyRef Name="CustomerID" />
+      </Principal>
+      <Dependent Role="Cart">
+        <PropertyRef Name="CustomerID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__CartDetai__CartI__2D27B809">
+    <End Role="Cart" Type="Self.Cart" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="CartDetail" Type="Self.CartDetail" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Cart">
+        <PropertyRef Name="CartID" />
+      </Principal>
+      <Dependent Role="CartDetail">
+        <PropertyRef Name="CartID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__CartDetai__Produ__2E1BDC42">
+    <End Role="Product" Type="Self.Product" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="CartDetail" Type="Self.CartDetail" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="ProductID" />
+      </Principal>
+      <Dependent Role="CartDetail">
+        <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__OrderCust__Custo__30F848ED">
+    <End Role="Customer" Type="Self.Customer" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderCustomer" Type="Self.OrderCustomer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Customer">
+        <PropertyRef Name="CustomerID" />
+      </Principal>
+      <Dependent Role="OrderCustomer">
+        <PropertyRef Name="CustomerID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__OrderCust__Emplo__31EC6D26">
+    <End Role="Employee" Type="Self.Employee" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderCustomer" Type="Self.OrderCustomer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Employee">
+        <PropertyRef Name="EmployeeID" />
+      </Principal>
+      <Dependent Role="OrderCustomer">
+        <PropertyRef Name="EmployeeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__OrderCust__Order__37A5467C">
+    <End Role="OrderCustomer" Type="Self.OrderCustomer" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderCustomerDetail" Type="Self.OrderCustomerDetail" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="OrderCustomer">
+        <PropertyRef Name="OrderID" />
+      </Principal>
+      <Dependent Role="OrderCustomerDetail">
+        <PropertyRef Name="OrderID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OrderCustomer_VoucherID">
+    <End Role="Voucher" Type="Self.Voucher" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderCustomer" Type="Self.OrderCustomer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Voucher">
+        <PropertyRef Name="VoucherID" />
+      </Principal>
+      <Dependent Role="OrderCustomer">
+        <PropertyRef Name="VoucherID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__OrderCust__Produ__36B12243">
+    <End Role="Product" Type="Self.Product" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderCustomerDetail" Type="Self.OrderCustomerDetail" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="ProductID" />
+      </Principal>
+      <Dependent Role="OrderCustomerDetail">
+        <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="QL_THOITRANG_FINALEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Carts" EntityType="Self.Cart" />
+    <EntitySet Name="CartDetails" EntityType="Self.CartDetail" />
+    <EntitySet Name="Customers" EntityType="Self.Customer" />
+    <EntitySet Name="Employees" EntityType="Self.Employee" />
+    <EntitySet Name="OrderCustomers" EntityType="Self.OrderCustomer" />
+    <EntitySet Name="OrderCustomerDetails" EntityType="Self.OrderCustomerDetail" />
+    <EntitySet Name="Products" EntityType="Self.Product" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+    <EntitySet Name="Vouchers" EntityType="Self.Voucher" />
+    <AssociationSet Name="FK__Cart__CustomerID__2A4B4B5E" Association="Self.FK__Cart__CustomerID__2A4B4B5E">
+      <End Role="Customer" EntitySet="Customers" />
+      <End Role="Cart" EntitySet="Carts" />
+    </AssociationSet>
+    <AssociationSet Name="FK__CartDetai__CartI__2D27B809" Association="Self.FK__CartDetai__CartI__2D27B809">
+      <End Role="Cart" EntitySet="Carts" />
+      <End Role="CartDetail" EntitySet="CartDetails" />
+    </AssociationSet>
+    <AssociationSet Name="FK__CartDetai__Produ__2E1BDC42" Association="Self.FK__CartDetai__Produ__2E1BDC42">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="CartDetail" EntitySet="CartDetails" />
+    </AssociationSet>
+    <AssociationSet Name="FK__OrderCust__Custo__30F848ED" Association="Self.FK__OrderCust__Custo__30F848ED">
+      <End Role="Customer" EntitySet="Customers" />
+      <End Role="OrderCustomer" EntitySet="OrderCustomers" />
+    </AssociationSet>
+    <AssociationSet Name="FK__OrderCust__Emplo__31EC6D26" Association="Self.FK__OrderCust__Emplo__31EC6D26">
+      <End Role="Employee" EntitySet="Employees" />
+      <End Role="OrderCustomer" EntitySet="OrderCustomers" />
+    </AssociationSet>
+    <AssociationSet Name="FK__OrderCust__Order__37A5467C" Association="Self.FK__OrderCust__Order__37A5467C">
+      <End Role="OrderCustomer" EntitySet="OrderCustomers" />
+      <End Role="OrderCustomerDetail" EntitySet="OrderCustomerDetails" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OrderCustomer_VoucherID" Association="Self.FK_OrderCustomer_VoucherID">
+      <End Role="Voucher" EntitySet="Vouchers" />
+      <End Role="OrderCustomer" EntitySet="OrderCustomers" />
+    </AssociationSet>
+    <AssociationSet Name="FK__OrderCust__Produ__36B12243" Association="Self.FK__OrderCust__Produ__36B12243">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="OrderCustomerDetail" EntitySet="OrderCustomerDetails" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

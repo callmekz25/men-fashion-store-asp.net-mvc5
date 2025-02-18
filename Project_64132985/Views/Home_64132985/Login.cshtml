@@ -1,0 +1,396 @@
+﻿
+@{
+    ViewBag.Title = "Đăng nhập";
+    var emailRegex = @"/\S+@\S+\.\S+/";
+}
+<style>
+    .flex-child {
+        flex: 0 0 100%;
+    }
+
+    input:focus {
+        box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+    }
+
+    input {
+        transition: 0.3s ease
+    }
+</style>
+<div>
+    <div class="flex items-center bg-[#f6f6f6] px-6 py-10 lg:px-[100px] lg:py-8">
+        <div class="flex flex-col gap-2" data-aos="fade-right">
+            <span class="font-semibold text-[25px] lg:text-[19px]">Đăng nhập</span>
+        </div>
+    </div>
+    <div class="flex items-center justify-center bg-white py-[70px] pb-[150px] lg:py-[100px]">
+        <div class="flex max-w-[600px] overflow-hidden px-[2px]">
+            <div class="flex-child duration-[400ms] login-ui flex flex-grow justify-center transition-all">
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label for="email" class="text-[#474B57] text-[16px] lg:text-[14px]">Email</label>
+                        <input type="email" name="email" id="email" class="min-w-[320px] rounded border border-gray-300 px-2.5 py-3 text-[16px] outline-none lg:py-2" />
+                        <span class="error-email text-red-500 lg:text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="password" class="text-[#474B57] text-[16px] lg:text-[14px]">Mật khẩu</label>
+                        <div class="relative">
+                            <input type="password" name="password" id="password" class="min-w-[320px] rounded border border-gray-300 px-2.5 py-3 outline-none lg:py-2" />
+                            <ion-icon name="eye-off-outline" id="toggle-password" class="translate-y-[-50%] absolute right-3 top-[50%] size-5 hover:cursor-pointer lg:size-4"></ion-icon>
+                        </div>
+                        <span class="error-password text-red-500 lg:text-[13px]"></span>
+                    </div>
+                    <button class="login mt-3 flex items-center justify-center rounded bg-black px-5 py-[14px] text-center text-white text-[16px] lg:py-[13px] lg:text-[14px]">Đăng nhập</button>
+                    <span class="text-center text-gray-500 lg:text-[13px]">Bạn chưa có tài khoản? <a class="text-black" href=@Url.Action("Signup", "Home_64132985")>Đăng ký</a></span>
+                    <button id="forgot-pass" class="text-center text-gray-500 lg:text-[13px]">Quên mật khẩu?</button>
+                </div>
+            </div>
+            <div class="flex-child duration-[400ms] email-ui opacity-0 flex flex-grow justify-center transition-all">
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label for="email-reset" class="text-[#474B57] text-[16px] lg:text-[14px]">Email</label>
+                        <input type="email" id="email-reset" class="min-w-[320px] rounded border border-gray-300 px-2.5 py-3 text-[16px] outline-none lg:text-[15px] lg:py-2" />
+                        <span class="error-email-reset text-red-500 lg:text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="password" class="text-[#474B57] text-[16px] lg:text-[14px]">Mật khẩu mới</label>
+                        <div class="relative">
+                            <input type="password" id="new-password" class="min-w-[320px] rounded border border-gray-300 px-2.5 py-3 outline-none lg:py-2" />
+                            <ion-icon name="eye-off-outline" id="toggle-new-password" class="translate-y-[-50%] absolute right-3 top-[50%] size-5 hover:cursor-pointer lg:size-4"></ion-icon>
+                        </div>
+                        <span class="error-new-password text-red-500 lg:text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="password" class="text-[#474B57] text-[16px] lg:text-[14px]">Nhập lại mật khẩu</label>
+                        <div class="relative">
+                            <input type="password" id="confirm-password" class="min-w-[320px] rounded border border-gray-300 px-2.5 py-3 outline-none lg:py-2" />
+                            <ion-icon name="eye-off-outline" id="toggle-confirm-password" class="translate-y-[-50%] absolute right-3 top-[50%] size-5 hover:cursor-pointer lg:size-4"></ion-icon>
+                        </div>
+                        <span class="error-confirm-password text-red-500 lg:text-[13px]"></span>
+                    </div>
+                    <button class="get-code mt-3 flex items-center justify-center rounded bg-black px-5 py-[14px] text-center text-white text-[16px] lg:py-[13px] lg:text-[14px]">Xác nhận</button>
+                </div>
+            </div>
+            <div class="verify-ui flex-child opacity-0 duration-[400ms] flex flex-grow flex-col items-center gap-2 transition-all">
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold lg:text-[36px]">Xác thực tài khoản</span>
+                </div>
+                <span class="to-email mt-4 text-[#474B57] lg:text-[14px]"></span>
+                <input type="text" class="mt-4 min-w-[200px] rounded border border-gray-300 px-2 py-2" id="code" />
+                <span class="error-code mt-1 text-red-500 lg:text-[13px]"></span>
+                <div class="mt-4 flex items-center gap-2 lg:text-[12px]">
+                    <span class="text-[#474B57]">Bạn không nhận được mã xác thực</span>
+                    <button class="send-code-again text-blue-500 underline hover:cursor-pointer">Gửi lại mã xác thực</button>
+                </div>
+                <button class="verify mt-4 rounded bg-black px-8 py-2.5 font-medium text-white lg:text-[14px]">Xác thực</button>
+            </div>
+            <div class="notify-ui flex-child opacity-0 duration-[400ms] flex flex-grow flex-col items-center gap-2 transition-all">
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold lg:text-[32px]">Khôi phục mật khẩu thành công</span>
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png" class="size-8" />
+                </div>
+                <span class="text-[#474B57] lg:text-[15px]">Đăng nhập để trải nghiệm ngay.</span>
+                <button class="mt-2 rounded bg-black px-6 py-3 text-white lg:text-[13px]"><a href=@Url.Action("Login", "Home_64132985")>Đăng nhập ngay</a></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Login{
+    <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const email = document.querySelector("#email");
+                const password = document.querySelector("#password");
+                const errorEmail = document.querySelector(".error-email");
+                const errorPassword = document.querySelector(".error-password");
+                const btnLogin = document.querySelector(".login")
+                const emailRegex = new RegExp(@emailRegex);
+                const togglePassword = document.querySelector("#toggle-password");
+                const btnForgotPassword = document.querySelector("#forgot-pass");
+                const emailReset = document.querySelector("#email-reset");
+                const errorEmailReset = document.querySelector(".error-email-reset");
+                const loginUi = document.querySelector(".login-ui");
+                const emailUi = document.querySelector(".email-ui");
+                const btnGetCode = document.querySelector(".get-code");
+                const newPassword = document.querySelector("#new-password");
+                const confirmPassword = document.querySelector("#confirm-password");
+                const toggleNewPassword = document.querySelector("#toggle-new-password");
+                const toggleConfirmPassword = document.querySelector("#toggle-confirm-password");
+                const errorNewPassword = document.querySelector(".error-new-password");
+                const errorConfirmPassword = document.querySelector(".error-confirm-password");
+                const code = document.querySelector("#code");
+                const verifyUi = document.querySelector(".verify-ui");
+                const toEmail = document.querySelector(".to-email")
+                const errorCode = document.querySelector(".error-code")
+                const btnVerify = document.querySelector(".verify")
+                const notifyUi = document.querySelector(".notify-ui")
+                const btnSendCodeAgain = document.querySelector(".send-code-again");
+
+
+                  // Hàm ẩn email khi gửi mã xác thực
+                @Html.Raw("function hiddenEmail(email) " +
+               "{ const [name, domain] = email.split('@'); " +
+               "const hiddenName = name.slice(0, 3) + '*'.repeat(name.length - 3); " +
+               "return hiddenName + '@' + domain; }")
+
+                let authCode = "";
+                togglePassword.addEventListener("click", () => {
+                    if (password.type === "password") {
+                        password.type = "text";
+                        togglePassword.setAttribute("name", "eye-outline");
+                    } else {
+                        password.type = "password";
+                        togglePassword.setAttribute("name", "eye-off-outline");
+                    }
+                })
+                toggleNewPassword.addEventListener("click", () => {
+                    if (newPassword.type === "password") {
+                        newPassword.type = "text";
+                        toggleNewPassword.setAttribute("name", "eye-outline");
+                    } else {
+                        newPassword.type = "password";
+                        toggleNewPassword.setAttribute("name", "eye-off-outline");
+                    }
+                })
+                toggleConfirmPassword.addEventListener("click", () => {
+                    if (confirmPassword.type === "password") {
+                        confirmPassword.type = "text";
+                        toggleConfirmPassword.setAttribute("name", "eye-outline");
+                    } else {
+                        confirmPassword.type = "password";
+                        toggleConfirmPassword.setAttribute("name", "eye-off-outline");
+                    }
+                })
+                email.addEventListener("input", () => {
+                    email.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    errorEmail.textContent = ""
+                })
+                password.addEventListener("input", () => {
+                    password.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    errorPassword.textContent = ""
+                })
+                 btnLogin.addEventListener("click", () => {
+                     let flag = false;
+                     if (email.value === "") {
+                         errorEmail.textContent = "Email không được để trống";
+                         flag = true;
+                         email.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                     } else if (!emailRegex.test(email.value)) {
+                         errorEmail.textContent = "Email không hợp lệ";
+                         flag = true;
+                         email.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                     }
+                     else {
+                         errorEmail.textContent = ""
+                         email.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                     }
+                     if (password.value === "") {
+                         errorPassword.textContent = "Mật khẩu không được để trống";
+                         password.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                         flag = true;
+                     } else {
+                         errorPassword.textContent = "";
+                         password.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                     }
+                     if (flag === false) {
+                         btnLogin.classList.add("opacity-60");
+                         btnLogin.disabled = true;
+                         btnLogin.textContent = "Đang xử lý...";
+                         fetch("/Home_64132985/Login", {
+                             method: 'POST',
+                             headers: {
+                                 'Content-Type': 'application/json'
+                             },
+                             body: JSON.stringify({
+                                 email: email.value,
+                                 password: password.value,
+                             })
+                         }).then((response) => response.json())
+                             .then((data) => {
+                                 if (!data.success) {
+                                     Toastify({
+                                         text: data.message,
+                                         className: "info",
+                                         position: "center",
+                                         duration: 2500,
+                                         avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+
+                                         style: {
+                                             background: "white",
+                                             color: "black",
+                                             display: "flex",
+                                             alignItems: "center",
+                                             gap: "10px",
+
+                                         }
+                                     }).showToast();
+                                     btnLogin.classList.remove("opacity-60");
+                                     btnLogin.disabled = false;
+                                     btnLogin.textContent = "Đăng nhập";
+                                 }
+                                 else {
+                                     if (data.role) {
+                                         window.location.href = "/Admin/Dashboard"
+                                         btnLogin.classList.remove("opacity-60");
+                                         btnLogin.disabled = false;
+                                         btnLogin.textContent = "Đăng nhập";
+                                     } else {
+
+                                         window.location.href = "/"
+                                         btnLogin.classList.remove("opacity-60");
+                                         btnLogin.disabled = false;
+                                         btnLogin.textContent = "Đăng nhập";
+                                     }
+                                 }
+                             })
+                     }
+                 })
+
+
+                btnForgotPassword.addEventListener("click", () => {
+                    loginUi.classList.add("translate-x-[-100%]", "opacity-0");
+                    emailUi.classList.add("translate-x-[-100%]", "opacity-100")
+                })
+                btnGetCode.addEventListener("click", () => {
+
+
+                    let flag = false;
+                    if (emailReset.value === "") {
+                        flag = true;
+                        errorEmailReset.textContent = "Email không được trống";
+                        emailReset.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    } else if (!emailRegex.test(emailReset.value)) {
+                        flag = true; 
+                        errorEmailReset.textContent = "Email không hợp lệ";
+                        emailReset.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    }
+                    else {
+
+                        errorEmailReset.textContent = "";
+                        emailReset.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    }
+                    if (newPassword.value === "") {
+                        flag = true;
+                        errorNewPassword.textContent = "Mật khẩu không được trống";
+                        newPassword.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    } else if (newPassword.value.length < 6) {
+                        flag = true;
+                        errorNewPassword.textContent = "Mật khẩu không phải tối thiểu 6 kí tự";
+                        newPassword.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    } else {
+
+                        errorNewPassword.textContent = "";
+                        newPassword.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    }
+                    if (confirmPassword.value === "") {
+                        flag = true;
+                        errorConfirmPassword.textContent = "Mật khẩu không được trống";
+                        confirmPassword.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    } else if (confirmPassword.value !== newPassword.value) {
+                        flag = true;
+                        errorConfirmPassword.textContent = "Mật khẩu không khớp với nhau";
+                        confirmPassword.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    } else {
+                        errorConfirmPassword.textContent = "";
+                        confirmPassword.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    }
+
+                    if (!flag) {
+                        btnGetCode.classList.add("opacity-60");
+                        btnGetCode.disabled = true;
+                        btnGetCode.textContent = "Đang xử lý...";
+
+                        fetch("/Account_64132985/ForgotPassword", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: emailReset.value,
+                            })
+                        }).then((res) => res.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    loginUi.classList.add("translate-x-[-200%]");
+                                    emailUi.classList.add("translate-x-[-200%]");
+                                    email.classList.remove("opacity-100");
+                                    verifyUi.classList.add("translate-x-[-200%]", "opacity-100");
+                                    authCode = data.authCode;
+                                    toEmail.textContent = `Mã xác thực đã gửi tới ${hiddenEmail(emailReset.value)}`;
+                                } else {
+                                    errorEmailReset.textContent = data.message;
+                                    emailReset.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                                }
+                                btnGetCode.classList.remove("opacity-60");
+                                btnGetCode.disabled = false;
+                                btnGetCode.textContent = "Xác nhận";
+                            })
+                    }
+                })
+
+                btnVerify.addEventListener("click", () => {
+
+                    if (code.value === "") {
+                        code.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                        errorCode.textContent = "Mã xác thực không được trống";
+                    } else if (code.value !== authCode) {
+                        code.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                        errorCode.textContent = "Mã xác thực không hợp lệ";
+                    } else {
+                        code.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                        code.textContent = "";
+                        btnVerify.classList.add("opacity-60");
+                        btnVerify.disabled = true;
+                        btnVerify.textContent = "Đang xử lý...";
+                        fetch("/Account_64132985/RecoveryPassword", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: emailReset.value,
+                                password: newPassword.value
+                            })
+                        }).then((res) => res.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    loginUi.classList.add("translate-x-[-300%]");
+                                    emailUi.classList.add("translate-x-[-300%]");
+                                    verifyUi.classList.add("translate-x-[-300%]")
+                                    verifyUi.classList.remove("opacity-100");
+                                    notifyUi.classList.add("translate-x-[-300%]", "opacity-100");
+                                } else {
+                                    console.log("Lỗi xảy ra")
+                                }
+                            })
+                    }
+                })
+
+
+
+                btnSendCodeAgain.addEventListener("click", () => {
+                    btnSendCodeAgain.disabled = true
+                    fetch("/Account_64132985/ForgotPassword", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: emailReset.value,
+                        })
+                    }).then((res) => res.json())
+                        .then((data) => {
+                            authCode = data.authCode
+                            btnSendCodeAgain.disabled = false;
+                        })
+                })
+            })
+
+
+    </script>
+
+
+
+
+}

@@ -1,0 +1,237 @@
+﻿@model IEnumerable<Project_64132985.Models.OrderProductView_64132985>
+@{
+    ViewBag.Title = "Hồ sơ tài khoản";
+}
+<style>
+    .scroll-slides {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .overlay-cancel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s ease;
+    }
+
+        .overlay-cancel.active {
+            visibility: visible;
+            opacity: 1;
+        }
+</style>
+<div>
+    <div class="flex items-center bg-[#f6f6f6] px-6 py-10 lg:px-[100px] lg:py-[60px]">
+        <div class="flex flex-col gap-2" data-aos="fade-right">
+            <span class="font-semibold text-[22px] lg:text-[19px]">Hồ sơ tài khoản</span>
+        </div>
+    </div>
+    <div class="overlay-cancel">
+        <div class="popup-cancel scale-0 opacity-0 duration-[400ms] w-[350px] overflow-hidden rounded-xl bg-white font-medium transition-all">
+            <div class="flex items-center justify-between border-b border-gray-200 bg-gray-200 px-6 py-3">
+                <span class="text-[20px]">Hủy đơn đặt hàng?</span>
+                <ion-icon name="close-outline" class="close-popup size-7 hover:cursor-pointer"></ion-icon>
+            </div>
+            <div class="flex items-center border-b border-gray-200 px-6 py-4 font-normal text-[16px] text-gray-500">
+                <span class="text-start">Lưu ý thao tác không thể hoàn tác</span>
+            </div>
+            <div class="flex items-center justify-end gap-5 px-6 py-4 font-medium text-[15px]">
+                <button class="btn-close-cancel border-2 cancel rounded-md border-gray-200 px-6 py-1">
+                    Hủy
+                </button>
+                <button class="btn-apply-cancel rounded-md bg-red-500 px-6 py-1.5 text-white">
+                    Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mt-[60px] bg-white px-6 lg:px-[100px]">
+        <div class="flex flex-col gap-10 lg:flex-row">
+            @*Phần menu*@
+            <ul class="scroll-slides flex max-w-full flex-row gap-3 overflow-x-scroll lg:w-[200px] lg:flex-col lg:gap-3 lg:py-[60px]">
+                <li class="">
+                    <a href=@Url.Action("Index", "Account_64132985") class="flex min-w-[140px] items-center gap-2 px-3 py-3 text-black hover:cursor-pointer hover:text-black lg:py-2">
+                        <ion-icon name="cart-outline" class="text-black text-[23px] lg:text-[25px]"></ion-icon>
+                        <span class="font-medium text-[17px] lg:text-[14px]">Đơn mua</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href=@Url.Action("Address", "Account_64132985") class="flex min-w-[140px] items-center gap-2 rounded px-3 py-3 opacity-70 transition-all duration-300 hover:cursor-pointer hover:text-black hover:opacity-100 lg:py-2">
+                        <ion-icon name="person-outline" class="text-black text-[23px] lg:text-[25px]"></ion-icon>
+                        <span class="font-medium text-[17px] lg:text-[14px]">Thông tin</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href=@Url.Action("ChangePassword", "Account_64132985") class="flex min-w-[140px] items-center gap-2 rounded px-3 py-3 opacity-70 transition-all duration-300 hover:cursor-pointer hover:text-black hover:opacity-100 lg:py-2">
+                        <ion-icon name="key-outline" class="text-black text-[23px] lg:text-[25px]"></ion-icon>
+                        <span class="font-medium text-[17px] lg:text-[14px]">Mật khẩu</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href=@Url.Action("AccountDetail", "Account_64132985") class="flex min-w-[140px] items-center gap-2 rounded px-3 py-3 opacity-70 transition-all duration-300 hover:cursor-pointer hover:text-black hover:opacity-100 lg:py-2">
+                        <ion-icon name="mail-outline" class="text-black text-[23px] lg:text-[25px]"></ion-icon>
+                        <span class="font-medium text-[17px] lg:text-[14px]">Email</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href=@Url.Action("Logout", "Home_64132985") class="flex min-w-[140px] items-center gap-2 rounded px-3 py-3 opacity-70 transition-all duration-300 hover:cursor-pointer hover:text-black hover:opacity-100 lg:py-2">
+                        <ion-icon name="log-out-outline" class="text-black text-[23px] lg:text-[25px]"></ion-icon>
+                        <span class="font-medium text-[17px] lg:text-[14px]">Đăng xuất</span>
+                    </a>
+                </li>
+            </ul>
+
+            @*Phần detail của menu*@
+            <div class="w-full lg:border-l lg:border-gray-200 lg:pl-12">
+                <span class="font-medium lg:text-[18px]">Đơn mua</span>
+                <div class="mt-4 pb-[200px]">
+                    @if (Model != null && Model.Count() > 0)
+                    {
+
+                        foreach (var order in Model)
+                        {
+                            <div class="flex w-full flex-col gap-3 border-b border-gray-200 py-8 lg:w-[600px]">
+                                <div class="flex flex-col justify-between lg:items-center lg:flex-row">
+                                    <span class="text-[#5C5F6A] lg:text-[14px]">Đã đặt vào: @order.CreatedAt.ToString("dd-MM-yyyy")</span>
+                                    @if (order.Status == "Đã hủy")
+                                    {
+
+                                        <span class="mt-2 font-normal text-[15px] text-gray-400 lg:text-[14px] lg:mt-0">Trạng thái: <span class="text-red-500">@order.Status</span></span>
+                                    }
+                                    else if (order.Status == "Đang chờ xác nhận")
+                                    {
+                                        <span class="mt-2 font-normal text-[15px] text-gray-400 lg:text-[14px] lg:mt-0">Trạng thái: <span class="text-blue-500">@order.Status</span></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="mt-2 font-normal text-[15px] text-gray-400 lg:text-[14px] lg:mt-0">Trạng thái: <span class="text-green-500">@order.Status</span></span>
+                                    }
+                                </div>
+                                <div class="mt-2 flex flex-col">
+                                    <div class="flex flex-col gap-4">
+                                        @foreach (var product in order.Products)
+                                        {
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="flex items-center justify-center rounded bg-[#F6F6F6] px-2 py-2">
+                                                        <img src="~/Images/Products/@product.Img" class="size-20 object-contain" />
+                                                    </div>
+                                                    <div class="flex flex-col gap-1.5">
+                                                        <span class="font-medium text-[18px] lg:text-[17px]">@product.ProductName</span>
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="flex items-center gap-1">
+                                                                <span class="text-[#5C5F6A] text-[13px] lg:text-[13px]">Kích cỡ:</span>
+                                                                <span class="text-black text-[13px] lg:text-[13px]">@product.Size</span>
+                                                            </div>
+                                                            <div class="flex items-center gap-1">
+                                                                <span class="text-[#5C5F6A] text-[13px] lg:text-[13px]">Màu sắc:</span>
+                                                                <span class="text-black text-[13px] lg:text-[13px]">@product.Color</span>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="flex items-center gap-1">
+                                                            <span class="text-[#5C5F6A] text-[13px] lg:text-[13px]">Số lượng:</span>
+                                                            <span class="text-black text-[13px] lg:text-[13px]">@product.Quantity</span>
+                                                        </div>
+                                                        <div class="flex items-center gap-1">
+                                                            <span class="text-[#5C5F6A] text-[13px] lg:text-[13px]">Loại:</span>
+                                                            <span class="text-black text-[13px] lg:text-[13px]">Áo @product.Category</span>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <span class="hidden font-medium text-[#0E1422] lg:block lg:text-[15px]">@((@product.Price * product.Quantity).ToString("#,0").Replace(",", ".")) đ</span>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="mt-4 flex items-center justify-end gap-2 font-semibold text-[16px] lg:text-[17px] lg:mt-0">
+                                        <span>Tổng cần thanh toán:</span>
+                                        <span class="text-red-500">@order.Total.ToString("#,0").Replace(",", ".") đ</span>
+                                    </div>
+                                    @if (order.Status != "Đã hủy" && order.Status != "Đã xác nhận")
+                                    {
+                                       
+                                        <button data-orderId="@order.OrderID" class="cancel-order mt-3 w-fit rounded-md bg-red-500 px-4 py-2 text-white lg:text-[15px]">Hủy đặt hàng</button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="mt-20 flex w-full items-center justify-center">
+                            <div class="flex flex-col items-center gap-3">
+                                <ion-icon name="file-tray-outline" class="text-[#5C5F6A] lg:text-[60px]"></ion-icon>
+                                <span class="text-[#5C5F6A] lg:text-[14px]">Bạn chưa đặt đơn hàng nào.</span>
+                                <a href="@Url.Action("Index", "Home_64132985")" class="mt-5 flex items-center gap-2 rounded bg-black px-4 py-2 text-white lg:text-[14px]">
+                                    <span>Bắt đầu mua sắm</span>
+                                    <ion-icon name="arrow-forward-outline" class=""></ion-icon>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section HandleOrderAccount{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnCancelOrder = document.querySelectorAll(".cancel-order");
+            const overlayCancel = document.querySelector(".overlay-cancel");
+            const popupCancel = document.querySelector(".popup-cancel");
+            const btnClose = document.querySelector(".close-popup");
+            const btnCancel = document.querySelector(".btn-close-cancel");
+            const btnApplyCancel = document.querySelector(".btn-apply-cancel");
+            let orderID = ""
+            btnCancelOrder.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    orderID = btn.getAttribute("data-orderID");
+                    overlayCancel.classList.add("active");
+                    popupCancel.classList.add("scale-100", "opacity-100");
+                })
+            })
+            btnCancel.addEventListener("click", () => {
+                overlayCancel.classList.remove("active");
+                popupCancel.classList.remove("scale-100", "opacity-100");
+            })
+            btnClose.addEventListener("click", () => {
+                overlayCancel.classList.remove("active");
+                popupCancel.classList.remove("scale-100", "opacity-100");
+            })
+
+
+            btnApplyCancel.addEventListener("click", () => {
+                fetch("/Order_64132985/CancelOrder", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: orderID
+                    })
+                }).then((res) => res.json())
+                    .then((data) => {
+                        if (data.success) {
+                            this.location.reload();
+                        }
+                    })
+            })
+        })
+    </script>
+
+
+
+}

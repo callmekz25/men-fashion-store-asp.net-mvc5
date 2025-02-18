@@ -1,0 +1,307 @@
+﻿
+@{
+    ViewBag.Title = "Checkout";
+    var emailRegex = @"/\S+@\S+\.\S+/";
+}
+
+<div>
+    <div class="flex items-center bg-[#f6f6f6] px-6 py-10 lg:px-[100px] lg:py-[60px]">
+        <div class="flex flex-col gap-2" data-aos="fade-right">
+            <span class="font-semibold text-[22px] lg:text-[19px]">Thanh toán</span>
+        </div>
+    </div>
+    <div class="bg-white px-6 py-[60px] pb-[150px] lg:px-[100px]">
+        <div class="flex flex-col gap-10 lg:flex-row lg:gap-[120px]">
+            <div class="flex w-full flex-col lg:w-[60%]">
+                <span class="font-semibold text-[20px] lg:text-[17px]">Thông tin giao hàng</span>
+                <div class="mt-20 flex flex-col gap-6">
+                    <div class="flex flex-col items-start gap-4 lg:flex-row">
+                        <div class="flex w-full flex-col gap-1">
+                            <label class="text-[#474B57] text-[16px] lg:text-[14px]">Họ Tên</label>
+                            <input type="text" name="name" readonly class="border-2 name rounded border-gray-200 px-2 py-3 text-[17px] lg:py-2 lg:text-[15px]" value="@ViewBag.User.CustomerName" />
+                            <span class="error-name text-red-500 lg:text-[13px]"></span>
+                        </div>
+                        <div class="flex w-full flex-col gap-1">
+                            <label class="text-[#474B57] text-[16px] lg:text-[14px]">Email</label>
+                            <input readonly type="email" name="email" class="border-2 email rounded border-gray-200 px-2 py-3 text-[17px] lg:py-2 lg:text-[15px]" value="@ViewBag.User.Email" />
+                            <span class="error-email text-red-500 lg:text-[13px]"></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-start gap-4 lg:flex-row">
+                        <div class="flex w-full flex-col gap-1">
+                            <label class="text-[#474B57] text-[16px] lg:text-[14px]">Số điện thoại</label>
+                            <input type="text" name="phone" class="border-2 phone rounded border-gray-200 px-2 py-3 text-[17px] lg:py-2 lg:text-[15px]" value="@ViewBag.User.PhoneNumber" />
+                            <span class="error-phone text-red-500 lg:text-[13px]"></span>
+                        </div>
+                        <div class="flex w-full flex-col gap-1">
+                            <label class="text-[#474B57] text-[16px] lg:text-[14px]">Địa chỉ</label>
+                            <input type="email" name="address" class="border-2 address rounded border-gray-200 px-2 py-3 text-[17px] lg:py-2 lg:text-[15px]" value="@ViewBag.User.Addr" />
+                            <span class="error-address text-red-500 lg:text-[13px]"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5 w-full lg:border-l-2 lg:w-[37%] lg:border-gray-100 lg:pl-10 lg:mt-0">
+                <span class="font-semibold text-[19px] lg:text-[17px]">Đơn hàng của bạn</span>
+                <div class="mt-6 max-h-[250px] overflow-y-scroll pr-3 lg:max-h-[220px]">
+                    @foreach (var product in ViewBag.Products)
+                    {
+                        <div class="flex items-end justify-between border-b border-gray-200 py-4">
+                            <div class="flex items-center gap-3">
+                                <img src="~/Images/Products/@product.Img" class="size-20 object-contain" />
+                                <div class="flex w-full flex-col gap-2">
+                                    <span class="font-medium text-[17px] lg:text-[16px]">@product.ProductName</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <span class="hidden text-[#5C5F6A] lg:text-[13px] lg:block">Kích cỡ:</span>
+                                            <span class="text-black lg:text-[13px]">@product.Size</span>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <span class="block lg:hidden">,</span>
+                                            <span class="hidden text-[#5C5F6A] lg:text-[13px] lg:block">Màu:</span>
+                                            <span class="text-black lg:text-[13px]">@product.Color</span>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <span class="block lg:hidden">,</span>
+                                            <span class="hidden text-[#5C5F6A] lg:text-[13px] lg:block">Số lượng:</span>
+                                            <span class="text-black lg:text-[13px]">@product.Quantity</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-[#5C5F6A] lg:text-[13px]">Loại:</span>
+                                        <span class="text-black lg:text-[13px]">@product.Category</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="price-base-quantity font-medium text-[17px] lg:text-[14px]">@((@product.Price * product.Quantity).ToString("#,0").Replace(",", "."))đ</span>
+                        </div>
+                    }
+
+                </div>
+                <div class="mt-8 flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" class="voucher-code border-2 h-full w-[70%] rounded border-gray-200 px-3 py-2.5 outline-none lg:text-[14px]" placeholder="Nhập mã giảm giá" />
+                        <button class="btn-apply h-full w-[30%] rounded bg-black px-4 py-[9px] text-white lg:text-[14px]">Áp dụng</button>
+                    </div>
+                    <span class="error-code text-red-500 lg:text-[13px]"></span>
+                </div>
+                <span class="voucher-id hidden"></span>
+                <div class="mt-10">
+                    <div class="flex items-center justify-between text-[#5C5F6A] text-[16px] lg:text-[14px]">
+                        <span>Tổng tiền tạm tính</span>
+                        <span class="subtotal font-medium text-black">0 đ</span>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-[#5C5F6A] text-[16px] lg:text-[14px]">
+                        <span>Giảm giá</span>
+                        <span class="price-discount font-medium text-red-500">-0 đ</span>
+                    </div>
+                    <div class="my-5 h-[1.5px] bg-gray-200"></div>
+                    <div class="mt-2 flex items-center justify-between font-medium text-[17px] lg:text-[16px]">
+                        <span>Tổng thanh toán</span>
+                        <span class="total font-medium text-black"></span>
+                    </div>
+                    <button data-orderID="@ViewBag.OrderID" class="btn-order mt-14 w-full rounded bg-black py-4 text-white lg:text-[14px]">Đặt hàng</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+@section Checkout
+{
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+        const name = document.querySelector(".name");
+        const email = document.querySelector(".email");
+        const phone = document.querySelector(".phone");
+        const address = document.querySelector(".address");
+        const errorName = document.querySelector(".error-name");
+        const errorEmail = document.querySelector(".error-email");
+        const errorPhone = document.querySelector(".error-phone");
+            const errorAddress = document.querySelector(".error-address");
+            const priceBaseQuantityOfProduct = document.querySelectorAll(".price-base-quantity");
+        const btnOrder = document.querySelector(".btn-order");
+        const btnApplyCode = document.querySelector(".btn-apply");
+            const voucherCode = document.querySelector(".voucher-code");
+            const errorCode = document.querySelector(".error-code");
+            const priceDiscountEl = document.querySelector(".price-discount");
+            const subtotal = document.querySelector(".subtotal");
+            const totalEl = document.querySelector(".total");
+            const voucherIdHidden = document.querySelector(".voucher-id");
+            const emailRegex = new RegExp(@emailRegex);
+
+
+            const formatVND = (amount) => {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            };
+
+            let subtotalAll = 0;
+            let total = 0;
+            let priceDiscount = 0;
+            priceBaseQuantityOfProduct.forEach((p) => {
+                const priceWithoutDots = p.textContent.replace(/\./g, '').replace('đ', '');  // Loại bỏ dấu chấm và chữ "đ"
+                const priceInt = parseInt(priceWithoutDots, 10);
+                subtotalAll += priceInt;
+            })
+            subtotal.innerText = `${formatVND(subtotalAll)}`;
+
+            function calcTotal() {
+                total = subtotalAll - priceDiscount;
+                totalEl.innerText = `${formatVND(total)}`;
+            }
+            calcTotal()
+
+            voucherCode.addEventListener("input", () => {
+                errorCode.innerText = "";
+                voucherCode.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+            btnApplyCode.addEventListener("click", () => {
+               
+                if (voucherCode.value == "") {
+
+                    errorCode.innerText = "Vui lòng nhập mã giảm giá";
+                    priceDiscountEl.textContent = "-0 đ";
+                    voucherCode.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    fetch("/Order_64132985/ApplyVoucher", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: voucherCode.value
+                        })
+                    }).then((response) => response.json())
+                        .then((data) => {
+                            if (!data.success) {
+                                errorCode.innerText = data.message;
+                                priceDiscountEl.textContent = "-0 đ";
+                                voucherCode.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                            } else {
+                                Toastify({
+                                    text: data.message,
+                                    className: "info",
+                                    position: "center",
+                                    duration: 2000,
+                                  
+                                    avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        fontSize: "14px",
+
+                                    },
+                                
+                                }).showToast();
+                                errorCode.textContent = "";
+                                voucherCode.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                              
+
+                                priceDiscount = subtotalAll * (parseInt(data.discount) / 100)
+                                priceDiscountEl.textContent = `-${formatVND(priceDiscount)}`;
+                                voucherIdHidden.textContent = data.voucherID;
+                                calcTotal();
+                            }
+                        })
+                        .catch((e) => {
+                            console.log(e.message);
+                        })
+                }
+            })
+
+            phone.addEventListener("input", () => {
+                errorPhone.textContent = "";
+                phone.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+
+            address.addEventListener("input", () => {
+                errorAddress.textContent = "";
+                address.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            })
+
+            btnOrder.addEventListener("click", () => {
+                const orderID = btnOrder.getAttribute("data-orderID");
+               
+            let flag = false;
+            if (name.value === "") {
+                errorName.textContent = "Vui lòng nhập họ tên của bạn";
+                flag = true;
+            } else {
+                errorName.textContent == ""
+             
+            }
+            if (email.value === "") {
+                errorEmail.textContent = "Vui lòng nhập email của bạn";
+                flag = true;
+            }
+            else if (!emailRegex.test(email.value)) {
+                errorEmail.textContent = "Địa chỉ email không hợp lệ";
+                flag = true;
+            }
+            else {
+                errorEmail.textContent = "";
+              
+            }
+            if (phone.value === "") {
+                errorPhone.textContent = "Vui lòng nhập số điện thoại của bạn";
+                flag = true;
+                phone.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+            }
+            else if (!phone.value.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g)) {
+                errorPhone.textContent = "Số điện thoại không hợp lệ";
+                flag = true;
+                phone.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+            }
+            else {
+                errorPhone.textContent = "";
+                phone.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            }
+            if (address.value === "") {
+                errorAddress.textContent = "Vui lòng nhập địa chỉ của bạn";
+                flag = true;
+                address.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+            }
+            else {
+                errorAddress.textContent = "";
+                address.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+            
+            }
+            // Validate thành công
+            if (flag === false) {
+                fetch("/Order_64132985/PlaceOrder", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        orderId: orderID,
+                        name: name.value,
+                        email: email.value,
+                        phone: phone.value,
+                        address: address.value,
+                        voucher: voucherIdHidden.textContent,
+                    })
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            window.location.href = `/Notify/${orderID}`;
+                        } else {
+                            console.log("Fail")
+                        }
+                    })
+                    .catch((e) => console.log(e));
+            }
+        });
+    });
+
+    </script>
+
+}

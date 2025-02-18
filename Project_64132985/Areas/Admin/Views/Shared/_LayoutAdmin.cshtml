@@ -1,0 +1,366 @@
+﻿
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    @RenderSection("Product", required: false)
+    @RenderSection("Edit", required: false)
+    @RenderSection("Dashboard", required: false)
+    @RenderSection("Customer", required: false)
+    @RenderSection("Add", required: false)
+    @RenderSection("AdminOrder", required: false)
+    @RenderSection("AddEmployee", required: false)
+    @RenderSection("HandleVoucher", required: false)
+    @RenderSection("AddVoucher", required: false)
+    @RenderSection("EditVoucher", required: false)
+</head>
+<body style="font-family:Roboto">
+    <style>
+        body {
+            overflow-y: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .overlay-account {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+
+            .overlay-account.active {
+                visibility: visible;
+                opacity: 1;
+            }
+        /* Popup content */
+        .popup-account {
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        input[type=text]:focus {
+            box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+        }
+        input[type=date]:focus {
+            box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+        }
+        input[type=select]:focus {
+            box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+        }
+        input[type=number]:focus {
+            box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+        }
+        input[type=email]:focus {
+            box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+        }
+        input {
+            transition: 0.3s ease;
+            outline: none;
+        }
+        select {
+            transition: 0.3s ease;
+            outline: none;
+        }
+            select:focus {
+                box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+            }
+    </style>
+    <div>
+        <div class="flex min-h-screen overflow-x-hidden">
+            <div class="overlay-account">
+                <div class="popup-account duration-[400ms] scale-0 opacity-0 flex w-[600px] flex-col gap-1 rounded-2xl px-6 pb-3 pt-8 transition-all">
+                    <img class="image-emp-main size-20 rounded-full object-contain" />
+                    <span id="name-account-title" class="font-medium text-[20px]"></span>
+                    <span id="email-account-title" class="text-[14px] text-gray-500"></span>
+                    <div class="mt-4 flex items-center justify-between border-t border-gray-300 py-3 text-[15px]">
+                        <label for="name-account">Họ tên</label>
+                        <div class="flex w-[60%] flex-col gap-1">
+                            <input readonly id="name-account" type="text" class="border-2 w-full rounded-md border-gray-300 px-2 py-1.5 text-[15px] outline-none" />
+                            <span class="error-name-account text-red-500 text-[13px]"></span>
+
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-gray-300 py-3">
+                        <label for="email-account">Email</label>
+                        <div class="flex w-[60%] flex-col gap-1">
+                            <input readonly id="email-account" type="email" class="border-2 w-full rounded-md border-gray-300 px-2 py-1.5 text-[15px] outline-none" />
+                            <span class="error-email-account text-red-500 text-[13px]"></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-gray-300 py-3">
+                        <label for="phone-account">Số điện thoại</label>
+                        <div class="flex w-[60%] flex-col gap-1">
+                            <input id="phone-account" type="text" class="border-2 w-full rounded-md border-gray-300 px-2 py-1.5 text-[15px] outline-none" />
+                            <span class="error-phone-account text-red-500 text-[13px]"></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-gray-300 py-3">
+                        <label for="addr-account">Địa chỉ</label>
+                        <div class="flex w-[60%] flex-col gap-1">
+                            <input id="addr-account" type="text" class="border-2 w-full rounded-md border-gray-300 px-2 py-1.5 text-[15px] outline-none" />
+                            <span class="error-addr-account text-red-500 text-[13px]"></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-gray-300 py-4">
+                        <span>Ảnh đại diện</span>
+                        <div class="flex w-[60%] items-center gap-6">
+                            <img class="image-emp size-16 rounded-full object-contain" />
+                            <label for="img-account" class="border-2 rounded-md border-gray-300 px-2 py-1.5 text-[15px] hover:cursor-pointer">Thay đổi ảnh</label>
+                            <input type="file" name="image-emp" id="img-account" class="hidden" />
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-4 border-t border-gray-300 py-3">
+                        <button id="btn-cancel-account" class="rounded-md border border-gray-300 px-4 py-2 text-[14px]">Hủy</button>
+                        <button id="btn-change-account" disabled class="opacity-60 rounded-md bg-[#4b68ff] px-4 py-2 text-[14px] text-white">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </div>
+            <div class="min-w-[250px] bg-white px-8 py-8">
+                <div class="flex items-center justify-center gap-3">
+                    <img src="~/Images/Logo/logo.png" class="size-14 rounded-full object-contain" />
+                    <span class="title-menu font-semibold lg:text-[20px]">CoolBoy</span>
+
+                </div>
+
+                <ul class="mt-14 flex flex-col gap-6">
+                    <li>
+                        <a href="@Url.Action("Index", "Dashboard_64132985")" id="dashboard" class="flex items-center gap-4 rounded-lg px-4 py-3 text-[#5C5F6A] transition-all duration-300 hover:bg-[#4b68ff] hover:text-white">
+                            <ion-icon name="home-outline" class="size-6"></ion-icon>
+                            <span>Trang chủ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "AdminProduct_64132985")" id="product" class="flex items-center gap-4 rounded-lg px-4 py-3 text-[#5C5F6A] transition-all duration-300 hover:bg-[#4b68ff] hover:text-white">
+                            <ion-icon name="cube-outline" class="size-6"></ion-icon>
+                            <span>Sản phẩm</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "AdminOrder_64132985")" id="order" class="flex items-center gap-4 rounded-lg px-4 py-3 text-[#5C5F6A] transition-all duration-300 hover:bg-[#4b68ff] hover:text-white">
+                            <ion-icon name="cart-outline" class="size-6"></ion-icon>
+                            <span>Đơn hàng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "Customer_64132985")" id="customer" class="flex items-center gap-4 rounded-lg px-4 py-3 text-[#5C5F6A] transition-all duration-300 hover:bg-[#4b68ff] hover:text-white">
+                            <ion-icon name="people-outline" class="size-6"></ion-icon>
+                            <span>Khách hàng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "AdminEmployee_64132985")" id="employee-nav" class="flex items-center gap-4 rounded-lg px-4 py-3 text-[#5C5F6A] transition-all duration-300 hover:bg-[#4b68ff] hover:text-white">
+                            <ion-icon name="people-outline" class="size-6"></ion-icon>
+                            <span>Nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Index", "AdminVoucher_64132985")" id="voucher-nav" class="flex items-center gap-4 rounded-lg px-4 py-3 text-[#5C5F6A] transition-all duration-300 hover:bg-[#4b68ff] hover:text-white">
+                            <ion-icon name="ticket-outline" class="size-6"></ion-icon>
+                            <span>Phiếu giảm giá</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Logout", "Home_64132985", new { area = "" })" class="flex items-center gap-4 rounded-lg px-4 py-3 text-[#5C5F6A] transition-all duration-200 hover:bg-[#4b68ff] hover:text-white">
+                            <ion-icon name="log-out-outline" class="size-6"></ion-icon>
+                            <span>Thoát ra</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="" id="account" class="flex items-center gap-4 rounded-lg px-4 py-3 text-[#5C5F6A] transition-all duration-200 hover:bg-[#4b68ff] hover:text-white">
+                            <ion-icon name="settings-outline" class="size-6"></ion-icon>
+                            <span>Tài khoản</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="max-h-screen w-full overflow-y-scroll bg-[#F6F6F6] px-10">
+
+                @RenderBody()
+            </div>
+        </div>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const accountDetail = document.querySelector("#account");
+                const imageEmpMain = document.querySelector(".image-emp-main");
+                const overlayAccount = document.querySelector(".overlay-account");
+                const popupAccount = document.querySelector(".popup-account");
+                const fileInput = document.querySelector("#img-account")
+                const imageEmp = document.querySelector(".image-emp");
+                const nameEmpTitle = document.querySelector("#name-account-title");
+                const emailEmpTitle = document.querySelector("#email-account-title");
+                const nameEmp = document.querySelector("#name-account")
+                const emailEmp = document.querySelector("#email-account")
+                const phoneEmp = document.querySelector("#phone-account");
+                const addrEmp = document.querySelector("#addr-account");
+                const btnCancelAccount = document.querySelector("#btn-cancel-account")
+                const btnChangeAccount = document.querySelector("#btn-change-account");
+
+                // Validate
+                const errorNameAccount = document.querySelector(".error-name-account");
+              
+                const errorPhoneAccount = document.querySelector(".error-phone-account");
+                const errorAddrAccount = document.querySelector(".error-addr-account");
+              
+
+                btnCancelAccount.addEventListener("click", () => {
+                    accountDetail.classList.remove("bg-[#4b68ff]", "text-white");
+                    overlayAccount.classList.remove("active");
+                    popupAccount.classList.remove("opacity-100", "scale-100");
+                    errorNameAccount.textContent = "";
+                    nameEmp.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                  
+                    errorPhoneAccount.textContent = "";
+                    phoneEmp.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    errorAddrAccount.textContent = "";
+
+                    addrEmp.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                })
+
+
+               
+              
+                phoneEmp.addEventListener("input", () => {
+                    btnChangeAccount.classList.remove("opacity-60");
+                    btnChangeAccount.disabled = false;
+                })
+                addrEmp.addEventListener("input", () => {
+                    btnChangeAccount.classList.remove("opacity-60");
+                    btnChangeAccount.disabled = false;
+                })
+
+                accountDetail.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    accountDetail.classList.add("bg-[#4b68ff]", "text-white");
+                    overlayAccount.classList.add("active");
+                    popupAccount.classList.add("opacity-100", "scale-100");
+                    fetch("/Admin/Account").then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                nameEmpTitle.textContent = data.user.EmployeeName
+                                emailEmpTitle.textContent = data.user.Email
+                                nameEmp.value = data.user.EmployeeName;
+                                emailEmp.value = data.user.Email;
+                                phoneEmp.value = data.user.PhoneNumber;
+                                addrEmp.value = data.user.Addr;
+                                imageEmpMain.src = `/Images/Employees/${data.user.Img}`;
+                                imageEmp.src = `/Images/Employees/${data.user.Img}`
+                            }
+                        })
+                })
+
+                // Hiện ảnh tạm thời sau khi tải ảnh
+                fileInput.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        btnChangeAccount.classList.remove("opacity-60");
+                        btnChangeAccount.disabled = false;
+                        const url = URL.createObjectURL(file);
+                        imageEmp.src = url;
+                        imageEmp.name = file.name
+                    }
+                })
+                btnChangeAccount.addEventListener("click", () => {
+                    let flag = false;
+                    
+                  
+                    if (phoneEmp.value === "") {
+                        errorPhoneAccount.textContent = "Số điện thoại không được trống";
+                        flag = true
+                        phoneEmp.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    } else if (!phoneEmp.value.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g)) {
+                        errorPhoneAccount.textContent = "Số điện thoại không hợp lệ";
+                        flag = true
+                        phoneEmp.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    } else {
+                        errorPhoneAccount.textContent = "";
+                        phoneEmp.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    }
+                    if (addrEmp.value === "") {
+                        errorAddrAccount.textContent = "Địa chỉ không được trống";
+                        flag = true
+                        addrEmp.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    } else {
+                        errorAddrAccount.textContent = "";
+
+                        addrEmp.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                    }
+                    if (!flag) {
+
+                        const formData = new FormData();
+                       
+                        formData.append("phone", phoneEmp.value);
+                        formData.append("address", addrEmp.value);
+                        formData.append("image-emp", fileInput.files[0]);  // Đảm bảo file được chọn từ input
+                        fetch("/Admin/Account/Update", {
+                            method: 'POST',
+                            body: formData
+
+                        }).then((response) => response.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    Toastify({
+                                        text: data.message,
+                                        className: "info",
+                                        position: "center",
+                                        duration: 2000,
+                                        //avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                        avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                        style: {
+                                            background: "white",
+                                            color: "black",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "10px",
+                                            fontSize: "16px",
+
+                                        },
+
+                                    }).showToast();
+                                    accountDetail.classList.remove("bg-[#4b68ff]", "text-white");
+                                    overlayAccount.classList.remove("active");
+                                    popupAccount.classList.remove("opacity-100", "scale-100");
+                                }
+                            })
+                    }
+                })
+            })
+
+
+        </script>
+    </div>
+</body>
+</html>

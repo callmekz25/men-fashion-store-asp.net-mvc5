@@ -1,0 +1,334 @@
+﻿
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="pb-10">
+    <div class="grid-cols-3 mt-16 grid gap-20">
+        <div class="rounded-xl bg-white p-5">
+            <div class="flex items-center justify-between">
+                <div class="flex flex-col gap-2">
+                    <span class="font-medium text-[18px]">Tổng doanh thu</span>
+                    <span class="text-[14px] text-[#5C5F6A]">Hôm nay</span>
+                </div>
+                <span class="revenue-today font-semibold text-[21px]"></span>
+            </div>
+        </div>
+        <div class="rounded-xl bg-white p-5">
+            <div class="flex items-center justify-between">
+                <div class="flex flex-col gap-2">
+                    <span class="font-medium text-[18px]">Khách hàng mới</span>
+                    <span class="text-[14px] text-[#5C5F6A]">Hôm nay</span>
+                </div>
+                <span class="customer-today font-semibold text-[21px]"></span>
+            </div>
+        </div>
+        <div class="rounded-xl bg-white p-5">
+            <div class="flex items-center justify-between">
+                <div class="flex flex-col gap-2">
+                    <span class="font-medium text-[18px]">Tổng đơn hàng</span>
+                    <span class="text-[14px] text-[#5C5F6A]">Hôm nay</span>
+                </div>
+                <span class="order-today font-semibold text-[21px]"></span>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 w-full rounded-2xl bg-white px-8 py-5">
+        <span class="font-semibold text-[20px]">Số lượng đơn đặt hàng theo từng tháng</span>
+        <canvas id="myChart"></canvas>
+    </div>
+    <div class="grid-cols-6 mt-5 grid w-full gap-5">
+        <div class="col-span-4 rounded-xl bg-white p-5">
+            <span class="font-semibold text-[20px]">Doanh thu theo từng tháng</span>
+            <canvas id="lineChart"></canvas>
+
+        </div>
+        <div class="col-span-2 h-fit rounded-2xl bg-white p-5">
+            <span class="font-semibold text-[20px]">Doanh thu của từng loại mặt hàng</span>
+            <canvas id="pieChart"></canvas>
+
+           
+        </div>
+    </div>
+</div>
+
+
+
+@section Dashboard{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const nav = document.querySelector("#dashboard");
+            nav.classList.add("bg-[#4b68ff]", "text-white");
+            const totalCustomerTodayEl = document.querySelector(".customer-today");
+            const totalOrderTodayEl = document.querySelector(".order-today")
+            const totalRevenueTodayEl = document.querySelector(".revenue-today")
+            const ctx = document.getElementById('myChart');
+            const pieCtx = document.querySelector("#pieChart");
+            const lineCtx = document.querySelector("#lineChart");
+            
+            let groupByMonthOrderData;
+            let groupByCategoryData;
+            let groupByMonthAndPriceData;
+         
+
+            const formatVND = (amount) => {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            };
+            fetch("/Dashboard_64132985/GetData")
+                .then((response) => response.json())
+                .then((data) => {
+
+                    const totalCustomerToday = data.customer.reduce((acc, curr) => {
+                        const dateNow = new Date(Date.now());
+                        const currentDate = new Date(dateNow.getFullYear(), dateNow.getMonth(), dateNow.getDate()); // Loại bỏ giờ phút giây
+                        const date = curr.CreatedAt;
+                        const [day, month, year] = curr.CreatedAt.split('-'); 
+                        const customerDate = new Date(year, month - 1, day); 
+                       
+                        if (customerDate.toDateString() === currentDate.toDateString()) {
+                            acc += 1;
+                        }
+                    
+                    
+                        return acc
+                    }, 0)
+                    const totalOrderToday = data.orders.reduce((acc, curr) => {
+                        const dateNow = new Date(Date.now());
+                        const currentDate = new Date(dateNow.getFullYear(), dateNow.getMonth(), dateNow.getDate()); // Loại bỏ giờ phút giây
+                        const date = curr.CreatedAt;
+                        const [day, month, year] = curr.CreatedAt.split('-');
+                        const orderDate = new Date(year, month - 1, day);
+
+                        if (orderDate.toDateString() === currentDate.toDateString()) {
+                            acc += 1;
+                        }
+                        return acc
+                    }, 0)
+                    const totalRevenueToday = data.revenueData.reduce((acc, curr) => {
+                      
+                        const dateNow = new Date(Date.now());
+                        const currentDate = new Date(dateNow.getFullYear(), dateNow.getMonth(), dateNow.getDate()); // Loại bỏ giờ phút giây
+                        const date = curr.CreatedAt;
+                        const [day, month, year] = curr.CreatedAt.split('-');
+                     
+                        const revenueDate = new Date(year, month - 1, day);
+                        
+                        if (revenueDate.toDateString() === currentDate.toDateString()) {
+                            acc += curr.Price;
+                        }
+                      
+                        return acc
+                    }, 0)
+                    totalCustomerTodayEl.textContent = totalCustomerToday;
+                    totalOrderTodayEl.textContent = totalOrderToday;
+                    totalRevenueTodayEl.textContent = formatVND(totalRevenueToday)
+                    const groupByMonthAndPrice = data.revenueData.reduce((acc, curr) => {
+                        
+                            const date = curr.CreatedAt.split("-")[1];
+                            if (!acc[date]) {
+                                acc[date] = 0
+                            }
+                            acc[date] += curr.Price 
+                        return acc
+                    }, {})
+
+                    const groupByCategory = data.ordersDetail.reduce((acc, curr) => {
+                        const category = curr.Category;
+                        if (!acc[category]) {
+                            acc[category] = 0;  
+                        }
+                        acc[category] += curr.Price;  
+                        return acc;
+                    }, {});
+
+
+                    
+                    const groupByMonthOrder = data.orders.reduce((acc, curr) => {
+                        const date = curr.CreatedAt.split("-")[1];
+
+                        if (!acc[date]) {
+                            acc[date] = 0;
+                        }
+                        acc[date] += 1;
+                        return acc;
+                    }, {});
+
+                    // Gộp object lại để vẽ canvas thống kê
+                    groupByMonthOrderData = Object.keys(groupByMonthOrder).map((month) => {
+                        return {
+                            label: month,
+                            value: groupByMonthOrder[month],
+                        };
+                    });
+
+                    groupByCategoryData = Object.keys(groupByCategory).map((category) => {
+                        return {
+                            label: category,
+                            value: groupByCategory[category],
+                        };
+                    });
+
+                    groupByMonthAndPriceData = Object.keys(groupByMonthAndPrice).map((month) => {
+                        return {
+                            label: month,
+                            value: groupByMonthAndPrice[month],
+                        };
+                    });
+                  
+                    // Sắp xếp lại theo tháng 
+                    groupByMonthOrderData = groupByMonthOrderData.sort((a, b) => a.label.localeCompare(b.label));
+
+                    groupByMonthAndPriceData = groupByMonthAndPriceData.sort((a, b) => a.label.localeCompare(b.label));
+
+                    // Vẽ biểu đồ 
+                    // Bar chart
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: groupByMonthOrderData.map((data) => data.label),
+                            datasets: [{
+                                label: 'Đơn đặt hàng',
+                                data: groupByMonthOrderData.map((data) => data.value),
+                                borderWidth: 1,
+                                barThickness: 40,
+                                backgroundColor: [
+                                    'rgb(76, 59, 207)',
+                                    'rgb(61, 193, 235)',
+                                    'rgb(155, 162, 174)',
+                                    'rgb(131, 111, 255)',
+                                ],
+                                borderRadius: 5
+                            }],
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false, // Hide X axis grid
+                                    },
+                                    ticks: {
+                                        //callback: function (value) {
+                                        //    return `T${value + 1}`; // Adjust value display if needed
+                                        //},
+                                        font: {
+                                            size: 15, // Increase font size for X axis
+                                        },
+                                    },
+                                },
+                                y: {
+                                    grid: {
+                                        display: false, // Hide Y axis grid
+                                    },
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1, // Step size for Y axis
+                                        callback: function (value) {
+                                            return Math.round(value); // Round Y axis values
+                                        },
+                                        font: {
+                                            size: 15, // Increase font size for Y axis
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    });
+
+                    // Donut chart
+                    new Chart(pieCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: groupByCategoryData.map((data) => data.label),
+                            datasets: [{
+                                label: 'Doanh thu',
+                                data: groupByCategoryData.map((data) => data.value),
+                                backgroundColor: [
+                                    'rgb(76, 59, 207)',  // Original purple
+                                    'rgb(61, 193, 235)',  // Original blue
+                                    'rgb(155, 162, 174)', // Original grey-blue
+                                    'rgb(131, 111, 255)', // Original light purple
+                                    'rgb(178, 135, 255)', // New light purple
+                                    'rgb(135, 206, 250)'  // New sky blue
+                                ],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            cutout: '50%', // Adjusts the size of the hole in the center
+                            spacing: 5,    // Adds spacing between the segments
+                            plugins: {
+                                tooltip: {
+                                    enabled: true // Show tooltips on hover
+                                }
+                            },
+                            elements: {
+                                arc: {
+                                    borderWidth: 4, // Adds spacing between the segments
+                                }
+                            }
+                        }
+                    });
+
+                    // Line chart
+                    new Chart(lineCtx, {
+                        type: 'line',
+                        data: {
+                            labels: groupByMonthAndPriceData.map((data) => data.label),
+                            datasets: [{
+                                label: 'Doanh thu',
+                                data: groupByMonthAndPriceData.map((data) => data.value),
+                                fill: false,
+                                borderColor: 'rgb(75, 192, 192)',
+                                tension: 0.1,
+                                backgroundColor: [
+                                    'rgb(76, 59, 207)',
+                                   
+                                ],
+                                borderColor: 'rgb(76, 59, 207)',
+                            }],
+
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false, // Hide X axis grid
+                                    },
+                                    ticks: {
+                                        //callback: function (value) {
+                                        //    return `T${value + 1}`; // Adjust value display if needed
+                                        //},
+                                        font: {
+                                            size: 14, 
+                                        },
+                                    },
+                                },
+                                y: {
+                                    grid: {
+                                        display: false, 
+                                    },
+                                    beginAtZero: true,
+                                    ticks: {  
+                                        callback: function (value) {
+                                            return formatVND(value); 
+                                        },
+                                        font: {
+                                            size: 14, 
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    });
+
+                })
+                .catch((error) => {
+                    console.error("Error fetching data: ", error);
+                });
+        });
+
+    </script>
+
+
+}

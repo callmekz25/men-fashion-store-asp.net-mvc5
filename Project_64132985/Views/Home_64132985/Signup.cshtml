@@ -1,0 +1,335 @@
+﻿
+@model Project_64132985.Models.Customer
+
+@{
+    ViewBag.Title = "Đăng ký";
+    var emailRegex = @"/\S+@\S+\.\S+/";
+}
+<style>
+    .flex-child {
+        flex: 0 0 100%;
+    }
+    input:focus {
+        box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+    }
+
+    input {
+        transition: 0.3s ease
+    }
+</style>
+<div>
+    <div class="flex items-center bg-[#f6f6f6] px-6 py-10 lg:px-[100px] lg:py-8">
+        <div class="flex flex-col gap-2" data-aos="fade-right">
+            <span class="font-semibold text-[25px] lg:text-[19px]">Đăng ký</span>
+         
+        </div>
+    </div>
+    <div class="flex items-center justify-center bg-white py-[60px] pb-[150px] lg:py-[100px]">
+        <div data-aos="fade-in">
+            <div class="flex max-w-[600px] overflow-hidden">
+                <div class="signup-ui flex-child flex flex-grow flex-col items-center gap-4 transition-all duration-500">
+                    <div class="flex flex-col gap-1">
+                        <label for="fullName" class="text-[#474B57] text-[16px] lg:text-[14px]">Họ tên</label>
+                        <input type="text" name="CustomerName" id="fullName" class="min-w-[320px] rounded border border-gray-300 px-2.5 py-3 text-[16px] outline-none lg:py-2" />
+                        <span class="error-name text-red-500 lg:text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="email" class="text-[#474B57] text-[16px] lg:text-[14px]">Email</label>
+                        <input type="email" name="Email" id="email" class="min-w-[320px] rounded border border-gray-300 px-2.5 py-3 text-[16px] outline-none lg:py-2" />
+                        <span class="error-email text-red-500 lg:text-[13px]"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="password" class="text-[#474B57] text-[16px] lg:text-[14px]">Mật khẩu</label>
+                        <div class="relative">
+                            <input type="password" name="Pass" id="password" class="min-w-[320px] rounded border border-gray-300 px-2.5 py-3 text-[16px] outline-none lg:py-2" />
+                            <ion-icon name="eye-off-outline" id="toggle-password" class="translate-y-[-50%] absolute right-3 top-[50%] size-4 hover:cursor-pointer"></ion-icon>
+                        </div>
+                        <span class="error-password text-red-500 lg:text-[13px]"></span>
+                    </div>
+                    <button class="signup mt-3 flex min-w-[320px] items-center justify-center rounded bg-black py-[14px] text-center text-[16px] text-white lg:py-[13px] lg:text-[14px]">Đăng ký</button>
+                    <span class="mt-2 text-center text-gray-500 lg:text-[13px]">Bạn đã có tài khoản? <a class="text-black" href=@Url.Action("Login", "Home_64132985")>Đăng nhập</a></span>
+                </div>
+
+                <div class="verify-ui flex-child flex flex-grow flex-col items-center gap-2 transition-all duration-500">
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold lg:text-[36px]">Xác thực tài khoản</span>
+                    </div>
+                    <span class="to-email mt-4 text-[#474B57] lg:text-[14px]"></span>
+                    <input type="text" class="mt-4 min-w-[200px] rounded border border-gray-300 px-2 py-2" id="code" />
+                    <span class="error-code mt-1 text-red-500 lg:text-[13px]"></span>
+                    <div class="mt-4 flex items-center gap-2 lg:text-[12px]">
+                        <span class="text-[#474B57]">Bạn không nhận được mã xác thực</span>
+                        <button class="send-code-again text-blue-500 underline hover:cursor-pointer">Gửi lại mã xác thực</button>
+                    </div>
+                    <button class="verify mt-4 rounded bg-black px-8 py-2.5 font-medium text-white lg:text-[14px]">Xác thực</button>
+                </div>
+
+
+                <div class="login-ui flex-child flex flex-grow flex-col items-center gap-2 transition-all duration-500">
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold lg:text-[32px]">Đăng ký thành công</span>
+                        <img src="https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png" class="size-8" />
+                    </div>
+                    <span class="text-[#474B57] lg:text-[15px]">Đăng nhập để trải nghiệm ngay.</span>
+                    <button class="mt-2 rounded bg-black px-6 py-3 text-white lg:text-[13px]"><a href=@Url.Action("Login", "Home_64132985")>Đăng nhập ngay</a></button>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+
+@section SignUp{
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const email = document.querySelector("#email");
+            const name = document.querySelector("#fullName");
+            const password = document.querySelector("#password");
+            const btnSignUp = document.querySelector(".signup");
+            const btnVerify = document.querySelector(".verify");
+            const errorName = document.querySelector(".error-name");
+            const errorEmail = document.querySelector(".error-email");
+            const errorPassword = document.querySelector(".error-password");
+            const errorCode = document.querySelector(".error-code");
+            const loginUi = document.querySelector(".login-ui");
+            const sigupUi = document.querySelector(".signup-ui")
+            const verifyUi = document.querySelector(".verify-ui");
+            const code = document.querySelector("#code");
+            const toEmailEl = document.querySelector(".to-email");
+            const btnSendCodeAgain = document.querySelector(".send-code-again");
+            const emailRegex = new RegExp(@emailRegex);
+            let authCode = "";
+
+            // Hàm ẩn email khi gửi mã xác thực
+              @Html.Raw("function hiddenEmail(email) " +
+             "{ const [name, domain] = email.split('@'); " +
+             "const hiddenName = name.slice(0, 3) + '*'.repeat(name.length - 3); " +
+             "return hiddenName + '@' + domain; }")
+
+            const togglePassword = document.querySelector("#toggle-password");
+
+            togglePassword.addEventListener("click", () => {
+                if (password.type === "password") {
+                    password.type = "text";
+                    togglePassword.setAttribute("name", "eye-outline");
+                } else {
+                    password.type = "password";
+                    togglePassword.setAttribute("name", "eye-off-outline");
+                }
+            })
+
+            name.addEventListener("input", () => {
+                name.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                errorName.textContent = ""
+            })
+            email.addEventListener("input", () => {
+                email.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                errorEmail.textContent = ""
+            })
+            password.addEventListener("input", () => {
+                password.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                errorPassword.textContent = ""
+            })
+            code.addEventListener("input", () => {
+                code.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                errorCode.textContent = ""
+            })
+
+
+            btnSignUp.addEventListener("click", () => {
+
+                let flag = false;
+                if (name.value === "") {
+                    errorName.textContent = "Họ tên không được để trống";
+                    flag = true;
+                    name.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                } else {
+                    errorName.textContent = "";
+                    name.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                }
+                if (email.value === "") {
+                    errorEmail.textContent = "Email không được để trống";
+                    email.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true
+                } else if (!emailRegex.test(email.value)) {
+                    errorEmail.textContent = "Email không hợp lệ"
+                    email.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true;
+                } else {
+                    errorEmail.textContent = "";
+                    email.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+
+                }
+                if (password.value === "") {
+                    errorPassword.textContent = "Mật khẩu không được để trống";
+                    password.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    flag = true
+                } else {
+                    errorPassword.textContent = "";
+                    password.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+
+                }
+
+                if (flag === false) {
+                    btnSignUp.disabled = true;
+                    btnSignUp.classList.add("opacity-60");
+                    btnSignUp.textContent = "Đang xử lý...";
+                    fetch("/Home_64132985/Signup", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            Email: email.value,
+                        })
+                    }).then((response) => response.json())
+                        .then((data) => {
+                            if (!data.success) {
+                                errorEmail.textContent = data.message;
+                                email.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+
+                            }
+                            else {
+                                errorEmail.textContent = "";
+                                toEmailEl.textContent = `Mã xác thực đã được gửi tới ${hiddenEmail(email.value)}`;
+                                sigupUi.classList.add("translate-x-[-100%]");
+                                verifyUi.classList.add("translate-x-[-100%]");
+                                authCode = data.authCode;
+
+                            }
+                            btnSignUp.disabled = false;
+                            btnSignUp.classList.remove("opacity-60");
+                            btnSignUp.textContent = "Đăng ký";
+                        })
+
+
+                }
+            })
+
+
+
+            // Xử lý khi bấm xác thực mã code từ gmail
+            btnVerify.addEventListener("click", () => {
+                btnVerify.disabled = true;
+                btnVerify.classList.add("opacity-60");
+                btnVerify.textContent = "Đang xử lý...";
+                if (code.value === "") {
+                    errorCode.textContent = "Mã xác thực không được trống";
+                    code.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                    btnVerify.disabled = false;
+                    btnVerify.classList.remove("opacity-60");
+                    btnVerify.textContent = "Xác thực";
+
+                } else {
+                    if (code.value !== authCode) {
+                        errorCode.textContent = "Mã xác thực không hợp lệ";
+                        code.classList.add("border-[#fc3939]", "bg-[#fff2f4]");
+                        btnVerify.disabled = false;
+                        btnVerify.classList.remove("opacity-60");
+                        btnVerify.textContent = "Xác thực";
+                    } else {
+                        code.classList.remove("border-[#fc3939]", "bg-[#fff2f4]");
+                        fetch("/Home_64132985/VerifyAndSaveUser", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                CustomerName: name.value,
+                                Email: email.value,
+                                Pass: password.value,
+                            })
+                        }).then((response) => response.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    sigupUi.classList.add("hidden");
+                                    verifyUi.classList.add("translate-x-[-100%]");
+                                    loginUi.classList.add("translate-x-[-100%]");
+                                    btnVerify.disabled = false;
+                                    btnVerify.classList.remove("opacity-60");
+                                    btnVerify.textContent = "Xác thực";
+                                }
+                            })
+                    }
+                }
+
+            })
+
+            // Xử lý khi bấm gửi mã lại
+            btnSendCodeAgain.addEventListener("click", () => {
+                btnSendCodeAgain.disabled = true;
+                fetch("/Home_64132985/Signup", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        Email: email.value,
+                    })
+                }).then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            Toastify({
+                                text: "Đã gửi lại mã xác thực",
+                                className: "info",
+                                position: "center",
+                                duration: 2000,
+                                //avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                style: {
+                                    background: "white",
+                                    color: "black",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    fontSize: "16px",
+
+                                },
+
+                            }).showToast();
+                            authCode = data.authCode
+                            btnSendCodeAgain.disabled = false;
+
+                        } else {
+                           
+                            Toastify({
+                                text: "Lỗi khi gửi mã xác thực",
+                                className: "info",
+                                position: "center",
+                                duration: 2000,
+                                avatar: "https://as1.ftcdn.net/v2/jpg/01/45/20/02/1000_F_145200273_450ViYipr5uU3WIwqzwjsRDHYTMcUH9P.jpg",
+                                //avatar: "https://static.vecteezy.com/system/resources/thumbnails/017/350/123/small_2x/green-check-mark-icon-in-round-shape-design-png.png",
+                                style: {
+                                    background: "white",
+                                    color: "black",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    fontSize: "16px",
+
+                                },
+
+                            }).showToast();
+                        }
+                        btnSendCodeAgain.classList.remove("text-gray-500");
+                        btnSendCodeAgain.classList.add("underline", "text-blue-500");
+                        btnSendCodeAgain.disabled = false
+                    })
+            })
+
+        })
+
+
+
+    </script>
+
+
+
+
+
+
+
+}

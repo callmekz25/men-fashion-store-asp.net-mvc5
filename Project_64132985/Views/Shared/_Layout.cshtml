@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    @RenderSection("Home", required: false)
+    @RenderSection("ProductDetail", required: false)
+    @RenderSection("Cart", required: false)
+    @RenderSection("Checkout", required: false)
+    @RenderSection("OurProduct", required: false)
+    @RenderSection("SignUp", required: false)
+    @RenderSection("Login", required: false)
+    @RenderSection("ChangeAddress", required: false)
+    @RenderSection("ChangePassword", required: false)
+    @RenderSection("AccountDetail", required: false)
+    @RenderSection("HandleOrderAccount", required: false)
+
+</head>
+<body style="font-family:Roboto">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        input:focus {
+            box-shadow: 0 0 8px rgb(45 123 230 / 60%)
+        }
+
+        input {
+            transition: 0.3s ease;
+            outline: none;
+        }
+
+        .overlay-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            display: flex;
+            justify-content: end;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+
+            .overlay-menu.active {
+                visibility: visible;
+                opacity: 1;
+            }
+    </style>
+
+    <div class="flex items-center justify-between bg-white px-6 py-6 lg:py-4 lg:px-[100px]">
+        <div class="flex items-center gap-3">
+            <img src="~/Images/Logo/logo.png" class="size-10 rounded-full object-contain" />
+            <span class="font-semibold text-[25px] lg:text-[23px]">CoolBoy</span>
+        </div>
+        <button id="btn-menu" class="flex w-[30px] flex-col items-center gap-2 transition-all duration-300 lg:hidden">
+            <div class="h-[1px] w-full bg-black"></div>
+            <div class="h-[1px] w-full bg-black"></div>
+            <div class="h-[1px] w-full bg-black"></div>
+        </button>
+        <div class="overlay-menu">
+            <div class="opacity-0 menu-content duration-[400ms] min-h-screen w-[65%] translate-x-[100%] bg-white px-8 py-5 shadow-xl transition-all md:w-[45%]">
+                <div class="flex items-center justify-end">
+
+                    <button id="close-menu">
+                        <ion-icon name="close-outline" class="size-10"></ion-icon>
+                    </button>
+                </div>
+                <ul class="mt-4 flex flex-col items-start gap-10 text-gray-500 text-[20px] lg:hidden">
+                    <li><a href=@Url.Action("Index","Home_64132985") class="py-1 transition-all duration-300 hover:text-black hover:border-b hover:border-black">Trang chủ</a></li>
+                    <li><a href=@Url.Action("OurProduct","Products_64132985") class="py-1 transition-all duration-300 hover:text-black hover:border-b hover:border-black">Sản phẩm</a></li>
+                    <li>
+                        <a class="flex items-center justify-center gap-3" href=@Url.Action("Index","Cart_64132985")>Giỏ hàng</a>
+                    </li>
+                    <li>
+
+                        <a class="flex items-center justify-center gap-3" href=@Url.Action("Index","Account_64132985")>Tài khoản</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <ul class="hidden items-center gap-10 text-gray-500 text-[15px] lg:flex">
+            <li><a id="home" href=@Url.Action("Index","Home_64132985") class="py-1 transition-all duration-300 hover:text-black hover:border-b hover:border-black">Trang chủ</a></li>
+            <li><a id="our-product" href=@Url.Action("OurProduct","Products_64132985") class="py-1 transition-all duration-300 hover:text-black hover:border-b hover:border-black">Sản phẩm</a></li>
+        </ul>
+        <ul class="hidden items-center gap-4 text-gray-500 lg:flex lg:items-center lg:text-[14px]">
+            @if (Session["User"] != null)
+            {
+                <li>
+
+                    <a class="flex items-center justify-center" href=@Url.Action("Index","Cart_64132985")><ion-icon name="cart-outline" class="text-[#5C5F6A] lg:text-[25px]"></ion-icon></a>
+                </li>
+                <li>
+
+                    <a class="flex items-center justify-center" href=@Url.Action("Index","Account_64132985")><ion-icon name="person-circle-outline" class="text-[#5C5F6A] lg:text-[25px]"></ion-icon></a>
+                </li>
+            }
+            else
+            {
+
+                <li><a href=@Url.Action("Signup","Home_64132985")>Đăng ký</a> | <a href=@Url.Action("Login","Home_64132985")>Đăng nhập</a></li>
+            }
+        </ul>
+    </div>
+    <div class="">
+        @RenderBody()
+
+    </div>
+    <footer class="flex items-center bg-white px-6 py-5 lg:px-[100px]">
+        <div class="grid-cols-2 grid w-full gap-10 lg:flex lg:justify-between">
+            <div class="flex flex-col gap-3">
+                <span class="font-medium text-[20px] lg:text-[18px]">Thông tin</span>
+                <ul class="mt-3 flex flex-col gap-3 text-[16px] lg:text-[17px]">
+                    <li>Nguyễn Hồng Khánh Vinh</li>
+                    <li>64132985</li>
+                    <li class="flex items-center gap-3">
+                        <a href="https://www.facebook.com/khanh.vinh.395669?locale=vi_VN"><ion-icon name="logo-facebook" class="size-8"></ion-icon></a>
+                        <a href="https://github.com/callmekz25"><ion-icon name="logo-github" class="size-8"></ion-icon></a>
+                        <a href="https://www.instagram.com/v_nguyen04/"><ion-icon name="logo-instagram" class="size-8"></ion-icon></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="flex flex-col gap-3">
+                <span class="font-medium text-[20px] lg:text-[20px]">Về</span>
+                <ul class="mt-3 flex flex-col gap-3 text-[16px] lg:text-[17px]">
+                    <li><a href="@Url.Action("Index", "Home_64132985")">Trang chủ</a></li>
+                    <li><a href="@Url.Action("OurProduct", "Products_64132985")">Sản phẩm</a></li>
+                </ul>
+            </div>
+            <div class="flex flex-col gap-3">
+                <span class="font-medium text-[20px] lg:text-[20px]">Tài khoản</span>
+                <ul class="mt-3 flex flex-col gap-3 text-[16px] lg:text-[17px]">
+                    <li><a href="@Url.Action("Index", "Account_64132985")">Đơn hàng</a></li>
+
+
+                    <li><a href="@Url.Action("Address", "Account_64132985")">Hồ sơ</a></li>
+                    <li><a href=@Url.Action("Index","Cart_64132985")>Giỏ hàng</a></li>
+                </ul>
+            </div>
+            <div class="flex flex-col gap-3">
+                <span class="font-medium text-[20px] lg:text-[20px]">Môn học</span>
+                <ul class="mt-3 flex flex-col gap-3 text-[16px] lg:text-[17px]">
+                    <li>Thiết kế web</li>
+                    <li>64CNTT2</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1200
+        });
+    </script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnMenu = document.querySelector("#btn-menu");
+            const btnCloseMenu = document.querySelector("#close-menu");
+            const overlayMenu = document.querySelector(".overlay-menu");
+            const contentMenu = document.querySelector(".menu-content");
+
+            btnMenu.addEventListener("click", () => {
+                overlayMenu.classList.add("active");
+                contentMenu.classList.add("opacity-100");
+                contentMenu.classList.add("translate-x-0");
+            })
+            btnCloseMenu.addEventListener("click", () => {
+                overlayMenu.classList.remove("active");
+                contentMenu.classList.remove("opacity-100");
+                contentMenu.classList.remove("translate-x-0");
+            })
+        })
+
+
+    </script>
+</body>
+</html>
